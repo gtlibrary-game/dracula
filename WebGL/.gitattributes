@@ -1,3 +1,0 @@
-WebGL/Build/WebGL.data.gz filter=lfs diff=lfs merge=lfs -text
-WebGL/Build/WebGL.wasm.gz filter=lfs diff=lfs merge=lfs -text
-WebGL/lib/thirdweb-unity-bridge.js filter=lfs diff=lfs merge=lfs -text
