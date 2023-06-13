@@ -52,12 +52,11 @@ public class NFTManager : MonoBehaviour
         }
         else {
             print("You have to conntect to your wallet!");
-            //         string address = await sdk.wallet.Connect(
-            // new WalletConnection(
-            //     provider = WalletProvider.WalletConnectV1, // e.g. use WalletConnect on any platform
-            //     chainId = 1 // Switch the wallet Ethereum Mainnet on connection
-            // )
-            // );
+            string address = await ThirdwebManager.Instance.SDK.wallet.Connect(
+            new WalletConnection(
+                WalletProvider.Metamask, // e.g. use WalletConnect on any platform
+                43113)
+            );
         }
     }
 
