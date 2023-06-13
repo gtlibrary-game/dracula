@@ -12,7 +12,7 @@ public class UIHeroNFTsTab : MonoBehaviour
 
     void OnEnable(){
 
-        nftManager.GetComponent<NFTManager>().onWalletConnected();
+        // nftManager.GetComponent<NFTManager>().onWalletConnected();
     }
     // Update is called once per frame
     void Update()

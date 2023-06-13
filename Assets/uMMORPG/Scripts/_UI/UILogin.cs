@@ -23,9 +23,6 @@ public partial class UILogin : MonoBehaviour
     public Button dedicatedButton;
     public Button cancelButton;
     public Button quitButton;
-
-
-
     public TextMeshProUGUI userNameInput;
     public TextMeshProUGUI userPassInput;
     void Start()

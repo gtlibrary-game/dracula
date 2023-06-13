@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Thirdweb;
@@ -5,6 +6,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+using Mirror;
+using TMPro;
 // using BLINK.RPGBuilder.Managers;
 using System.Threading.Tasks;
 public class NFTManager : MonoBehaviour
@@ -18,50 +22,50 @@ public class NFTManager : MonoBehaviour
     string walletAddress;
     public GameObject CanvasMng;
     public int NextTokenId;
-    // bool randomGenerated = false;
+    public bool walletFlg = false;
 
-    // public enum traits
-    // {
-    //     Agility,
-    //     Strength,
-    //     Wisdom,
-    //     Constitution,
-    //     Intuition,
-    //     Luck,
-    //     Perception
-    // }
-
-    // [System.Serializable]
-    // struct MyOpenSeaStyleAttributes
-    // {
-    //     public string trait_type;
-    //     public string value;
-    // }
-
-    // public NFT selectedNFT;
+    public GameObject LoginButton;
+    public GameObject RegisterButton;
+    public GameObject ConnectWalletButton;
     
     void Start()
     {
        IsConnectedWallet();
     }
-
+    void Update(){
+        print(walletFlg);
+        if(walletFlg){
+            LoginButton.SetActive(true);
+            RegisterButton.SetActive(true);
+        }
+        else{
+            LoginButton.SetActive(false);
+            RegisterButton.SetActive(false);
+        }
+    }
     public async void IsConnectedWallet(){
         var data = await ThirdwebManager.Instance.SDK.wallet.IsConnected();
         if(data){
-
+            // walletFlg = true;
         }
         else {
             print("You have to conntect to your wallet!");
-            string address = await ThirdwebManager.Instance.SDK.wallet.Connect(
-            new WalletConnection(
-                WalletProvider.Metamask, // e.g. use WalletConnect on any platform
-                43113)
-            );
+
+            try{
+
+                // var address = await ThirdwebManager.Instance.SDK.wallet.Connect(
+                //     new WalletConnection(WalletProvider.Metamask, 43113));
+                ConnectWalletButton.GetComponent<Prefab_ConnectWallet>().WalletConnect();
+            }
+            catch (Exception ex) {}
+
         }
     }
 
     public async void onWalletConnected()
     {
+        
+        walletFlg = true;
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abi);
         walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
       
