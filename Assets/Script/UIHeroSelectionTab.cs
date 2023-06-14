@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 public class UIHeroSelectionTab : MonoBehaviour
 {
     public GameObject panel;
@@ -9,6 +10,7 @@ public class UIHeroSelectionTab : MonoBehaviour
     Transform selecting = null;
     // Start is called before the first frame update
     Transform selected = null;
+    public GameObject characterName;
     void Start()
     {
         
@@ -25,6 +27,7 @@ public class UIHeroSelectionTab : MonoBehaviour
             trnsobj.GetChild(0).GetComponent<SelectableCharacter>().OnMouseDown();
             trnsobj.GetChild(0).GetComponent<PlayerEquipment>().avatarCamera.enabled = true;
             selecting = trnsobj;
+            characterName.GetComponent<TMP_InputField>().text = selecting.GetChild(0).name;
             selected.GetChild(0).GetComponent<PlayerEquipment>().avatarCamera.enabled = false;
         }
     }

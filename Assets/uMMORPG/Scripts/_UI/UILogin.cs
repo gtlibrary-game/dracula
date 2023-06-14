@@ -67,8 +67,8 @@ public partial class UILogin : MonoBehaviour
             registerButton.interactable = !manager.isNetworkActive;
             registerButton.onClick.SetListener(() => { auth.RegisterEmail(); });
 
-            resetPasswordButton.interactable = !manager.isNetworkActive;
-            resetPasswordButton.onClick.SetListener(() => { auth.ResetPassword(); });
+            // resetPasswordButton.interactable = !manager.isNetworkActive;
+            // resetPasswordButton.onClick.SetListener(() => { auth.ResetPassword(); });
 
             loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
