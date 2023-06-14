@@ -1,5 +1,6 @@
 {
     "name": "uMMORPG",
+    "rootNamespace": "",
     "references": [
         "Unity.TextMeshPro",
         "NavMeshComponents",
@@ -7,14 +8,16 @@
         "Mirror",
         "Mirror.Components",
         "Apathy",
-        "Controller2k"
+        "Controller2k",
+        "PlayFab"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
