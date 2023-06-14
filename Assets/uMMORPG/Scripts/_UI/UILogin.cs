@@ -23,7 +23,7 @@ public partial class UILogin : MonoBehaviour
     public Button dedicatedButton;
     public Button cancelButton;
     public Button quitButton;
-
+    public Button resetPasswordButton;
 
 
     public TextMeshProUGUI userNameInput;
@@ -65,10 +65,17 @@ public partial class UILogin : MonoBehaviour
             // buttons. interactable while network is not active
             // (using IsConnecting is slightly delayed and would allow multiple clicks)
             registerButton.interactable = !manager.isNetworkActive;
-            registerButton.onClick.SetListener(() => { uiPopup.Show(registerMessage); });
+            registerButton.onClick.SetListener(() => { auth.RegisterEmail(); });
+
+            resetPasswordButton.interactable = !manager.isNetworkActive;
+            resetPasswordButton.onClick.SetListener(() => { auth.ResetPassword(); });
+
             loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
-            loginButton.onClick.SetListener(() => { manager.StartClient(); });
+            loginButton.onClick.SetListener(() => {
+                 //auth.LoginUser();
+                 manager.StartClient();
+            });
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.onClick.SetListener(() => { manager.StartHost(); });

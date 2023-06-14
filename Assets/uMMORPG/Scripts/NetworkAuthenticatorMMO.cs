@@ -2,6 +2,8 @@
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Mirror;
+using PlayFab;
+using PlayFab.ClientModels;
 
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
@@ -16,7 +18,50 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     [Header("Security")]
     public string passwordSalt = "at_least_16_byte";
-    public int accountMaxLength = 16;
+    public int accountMaxLength = 256;
+
+    public void RegisterEmail() {
+        var request = new RegisterPlayFabUserRequest {
+            Email = loginAccount,
+            Password = loginPassword,
+            RequireBothUsernameAndEmail = false
+        }; 
+        
+        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+        Debug.Log("In register");
+    }
+    //void OnRegisterSuccess(RegisterPlayFabUserResult result) {
+    void OnRegisterSuccess(RegisterPlayFabUserResult result) {
+        Debug.LogWarning("You are now registred.");
+        //PlayFabClientAPI.Logout();
+    }
+    void OnError(PlayFabError error) {
+        Debug.LogWarning(error);
+    }
+
+    public void LoginUser() {
+        Debug.Log("In LoginUser");
+        var request = new LoginWithEmailAddressRequest {
+            Email = loginAccount,
+            Password = loginPassword
+        };
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+    }
+    public void OnLoginSuccess(LoginResult result) {
+        Debug.Log("Logged in.");
+        manager.StartClient();
+    }
+    public void ResetPassword() {
+        var request = new SendAccountRecoveryEmailRequest {
+            Email = loginAccount,
+            TitleId = "C0C36"
+        };
+        PlayFabClientAPI.SendAccountRecoveryEmail(request, OnPasswordReset, OnError);
+    }
+    public void OnPasswordReset(SendAccountRecoveryEmailResult result) {
+        Debug.Log("Password recovery email sent.");
+    }
+
 
     // client //////////////////////////////////////////////////////////////////
     public override void OnStartClient()
@@ -66,11 +111,12 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     // virtual in case someone wants to modify
     public virtual bool IsAllowedAccountName(string account)
     {
+        return true;
         // not too long?
         // only contains letters, number and underscore and not empty (+)?
         // (important for database safety etc.)
-        return account.Length <= accountMaxLength &&
-               Regex.IsMatch(account, @"^[a-zA-Z0-9_]+$");
+        //return account.Length <= accountMaxLength &&
+               //Regex.IsMatch(account, @"^[a-zA-Z0-9_\.]+$");
     }
 
     bool AccountLoggedIn(string account)
