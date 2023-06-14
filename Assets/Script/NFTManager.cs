@@ -33,6 +33,7 @@ public class NFTManager : MonoBehaviour
        IsConnectedWallet();
     }
     void Update(){
+        return;
         if(walletFlg){
             LoginButton.SetActive(true);
             RegisterButton.SetActive(true);
