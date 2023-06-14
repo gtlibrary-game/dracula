@@ -9,7 +9,7 @@ public class SelectableCharacter : MonoBehaviour
     // index will be set by networkmanager when creating this script
     public int index = -1;
 
-    void OnMouseDown()
+    public void OnMouseDown()
     {
         // set selection index
         ((NetworkManagerMMO)NetworkManager.singleton).selection = index;
