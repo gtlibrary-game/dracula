@@ -19,6 +19,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     [Header("Security")]
     public string passwordSalt = "at_least_16_byte";
     public int accountMaxLength = 256;
+    public string playFabId;
+    public string sessionTicket;
 
     public void RegisterEmail() {
         var request = new RegisterPlayFabUserRequest {
@@ -48,7 +50,11 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
     }
     public void OnLoginSuccess(LoginResult result) {
-        Debug.Log("Logged in.");
+        string playFabId = result.PlayFabId;
+        string sessionTicket = result.SessionTicket;
+
+        Debug.Log("Logged in with PlayFab ID: " + playFabId);
+        Debug.Log("Session ticket: " + sessionTicket);
         manager.StartClient();
     }
     public void ResetPassword() {
