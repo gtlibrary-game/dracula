@@ -92211,6 +92211,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CanvasMng: {fileID: 0}
   NextTokenId: 0
+  walletFlg: 0
+  LoginButton: {fileID: 5930045933221111024}
+  RegisterButton: {fileID: 1449114778}
+  ConnectWalletButton: {fileID: 2006486022}
 --- !u!1 &1805466309
 GameObject:
   m_ObjectHideFlags: 0
@@ -101502,6 +101506,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 405710, guid: 993983a1999ede14498cdceb325c0cae,
     type: 3}
   m_PrefabInstance: {fileID: 2005992361}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2006486022 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 696252699284340127, guid: a6218c0a90161f349bc6bc87fbc624da,
+    type: 3}
+  m_PrefabInstance: {fileID: 994856177}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2006969989
 GameObject:

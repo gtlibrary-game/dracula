@@ -155,7 +155,9 @@ public class Prefab_ConnectWallet : MonoBehaviour
     }
 
     // Connecting
-
+    public void WalletConnect(){
+        OnConnect(supportedWallets[0]);
+    }
     public async void OnConnect(WalletProvider wallet, string password = null, string email = "joe@biden.com", WalletProvider personalWallet = WalletProvider.LocalWallet)
     {
         try
