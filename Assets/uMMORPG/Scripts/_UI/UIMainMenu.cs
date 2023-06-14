@@ -9,13 +9,17 @@ public class UIMainMenu : MonoBehaviour
     public UINFTManagement uiNFTManagement;
     public NetworkManagerMMO manager; // singleton is null until update
     public GameObject panel;
-    public GameObject HeroNFTsTab;
+    
     public GameObject GameSettingPanel;
     public UICharacterSelection uiCharacterSelection;
     // public InputField nameInput;
     // public Dropdown classDropdown;
+    public GameObject HeroSelectionTab;
     public Button GameSettingButton;
+    public Button HeroNFTsButton;
+    public GameObject HeroNFTsTab;
 
+    public Button GameButton;
     void Update()
     {
         
@@ -29,6 +33,16 @@ public class UIMainMenu : MonoBehaviour
                     GameSettingButton.onClick.SetListener(() => {
                         GameSettingPanel.SetActive(true);
                         Hide();
+                    });
+
+                    HeroNFTsButton.onClick.SetListener(() => {
+                            HeroSelectionTab.SetActive(false);
+                            HeroNFTsTab.SetActive(true);
+                    });
+
+                    GameButton.onClick.SetListener(() => {
+                            HeroSelectionTab.SetActive(true);
+                            HeroNFTsTab.SetActive(false);
                     });
                 }
             else Hide();

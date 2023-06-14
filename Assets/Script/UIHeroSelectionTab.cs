@@ -28,6 +28,7 @@ public class UIHeroSelectionTab : MonoBehaviour
             trnsobj.GetChild(0).GetComponent<PlayerEquipment>().avatarCamera.enabled = true;
             selecting = trnsobj;
             characterName.GetComponent<TMP_InputField>().text = selecting.GetChild(0).name;
+            if(selected != null)
             selected.GetChild(0).GetComponent<PlayerEquipment>().avatarCamera.enabled = false;
         }
     }
