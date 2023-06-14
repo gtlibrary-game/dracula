@@ -23,7 +23,7 @@ public class UIMainMenu : MonoBehaviour
 
             
             // // still in lobby?
-            if (manager.state == NetworkState.Lobby && !uiCharacterCreation.IsVisible() && !uiNFTManagement.IsVisible() && !uiCharacterSelection.IsVisible())
+            if (manager.state == NetworkState.Lobby && !uiCharacterCreation.IsVisible() && !uiNFTManagement.IsVisible())
             {
                     Show();
                     GameSettingButton.onClick.SetListener(() => {

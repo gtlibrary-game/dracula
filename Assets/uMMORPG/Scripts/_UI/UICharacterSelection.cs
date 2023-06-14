@@ -17,10 +17,8 @@ public partial class UICharacterSelection : MonoBehaviour
     void Update()
     {
         // show while in lobby and while not creating a character
-        if (panel.activeSelf)
-        {
             // still in lobby?
-            if (manager.state == NetworkState.Lobby)
+            if (manager.state == NetworkState.Lobby&& !uiCharacterCreation.IsVisible() )
             {
                 Show();
        
@@ -73,7 +71,6 @@ public partial class UICharacterSelection : MonoBehaviour
                 }
             }
             else panel.SetActive(false);
-        }
     }
 
     public void Hide() { panel.SetActive(false); }

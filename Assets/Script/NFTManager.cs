@@ -64,6 +64,10 @@ public class NFTManager : MonoBehaviour
     {
         
         walletFlg = true;
+        
+    }
+    public async void getHeroNFT()
+    {
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
         walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
       
@@ -86,7 +90,6 @@ public class NFTManager : MonoBehaviour
             print(item.metadata.id);
         }
     }
-
     public async Task<int> getNextTokenId(){
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
         return await contract.Read<int>("_getNextTokenId");

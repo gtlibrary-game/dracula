@@ -16,6 +16,7 @@ public partial class UIEquipment : MonoBehaviour
 
     void Update()
     {
+        
         Player player = Player.localPlayer;
         if (player)
         {
@@ -26,8 +27,8 @@ public partial class UIEquipment : MonoBehaviour
             // only enable avatar camera while panel is active.
             // no need to render while the window is hidden!
             ((PlayerEquipment)player.equipment).avatarCamera.enabled = panel.activeSelf;
-
             // only update the panel if it's active
+           
             if (panel.activeSelf)
             {
                 // instantiate/destroy enough slots
@@ -50,6 +51,7 @@ public partial class UIEquipment : MonoBehaviour
 
                     if (itemSlot.amount > 0)
                     {
+
                         // refresh valid item
 
                         // only build tooltip while it's actually shown. this
@@ -94,6 +96,7 @@ public partial class UIEquipment : MonoBehaviour
                     }
                 }
             }
+            
         }
         else panel.SetActive(false);
     }
