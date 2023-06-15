@@ -2,14 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using Mirror;
 public class UIHeroNFTsTab : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject nftManager;
     public TMP_Dropdown characterDropDown;
-    public NetworkManagerMMO manager; 
-    public List<string> list = new List<string>() {"test0 (to)", "test1 (t1)" };
+    public NetworkManagerMMO manager;
+    public TMP_InputField nameInput;
+    public Button createHeroButton;
     void Start()
     {
         
@@ -32,6 +35,13 @@ public class UIHeroNFTsTab : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        createHeroButton.onClick.SetListener(() => {
+            CharacterCreateMsg message = new CharacterCreateMsg {
+                name = nameInput.text,
+                classIndex = characterDropDown.value,
+                gameMaster = false
+            };
+            NetworkClient.Send(message);
+        });
     }
 }
