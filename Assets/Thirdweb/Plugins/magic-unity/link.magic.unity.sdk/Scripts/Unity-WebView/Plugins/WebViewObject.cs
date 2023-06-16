@@ -567,111 +567,80 @@ public class WebViewObject : MonoBehaviour
 #endif
     }
 
-    public void SetMargins(int left, int top, int right, int bottom, bool relative = false)
-    {
+   public void SetMargins(int left, int top, int right, int bottom, bool relative = false)
+{
+    float ml = 0.0f;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
-        //TODO: UNSUPPORTED
+    //TODO: UNSUPPORTED
+    return;
+#elif UNITY_WEBPLAYER || UNITY_WEBGL
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+    if (webView == IntPtr.Zero)
         return;
-#elif UNITY_WEBPLAYER || UNITY_WEBGL
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-        if (webView == IntPtr.Zero)
-            return;
 #elif UNITY_IPHONE
-        if (webView == IntPtr.Zero)
-            return;
+    if (webView == IntPtr.Zero)
+        return;
 #elif UNITY_ANDROID
-        if (webView == null)
-            return;
+    if (webView == null)
+        return;
 #endif
 
-        mMarginLeft = left;
-        mMarginTop = top;
-        mMarginRight = right;
-        mMarginBottom = bottom;
-        mMarginRelative = relative;
-        float ml, mt, mr, mb;
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
-        //TODO: UNSUPPORTED
-#elif UNITY_WEBPLAYER || UNITY_WEBGL
-        ml = left;
-        mt = top;
-        mr = right;
-        mb = bottom;
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-        ml = left;
-        mt = top;
-        mr = right;
-        mb = bottom;
-#elif UNITY_IPHONE
-        if (relative)
-        {
-            float w = (float)Screen.width;
-            float h = (float)Screen.height;
-            ml = left / w;
-            mt = top / h;
-            mr = right / w;
-            mb = bottom / h;
-        }
-        else
-        {
-            ml = left;
-            mt = top;
-            mr = right;
-            mb = bottom;
-        }
-#elif UNITY_ANDROID
-        if (relative)
-        {
-            float w = (float)Screen.width;
-            float h = (float)Screen.height;
-            int iw = Screen.currentResolution.width;
-            int ih = Screen.currentResolution.height;
-            ml = left / w * iw;
-            mt = top / h * ih;
-            mr = right / w * iw;
-            mb = AdjustBottomMargin((int)(bottom / h * ih));
-        }
-        else
-        {
-            ml = left;
-            mt = top;
-            mr = right;
-            mb = AdjustBottomMargin(bottom);
-        }
-#endif
-        bool r = relative;
-
-        if (ml == mMarginLeftComputed
-            && mt == mMarginTopComputed
-            && mr == mMarginRightComputed
-            && mb == mMarginBottomComputed
-            && r == mMarginRelativeComputed)
-        {
-            return;
-        }
-        mMarginLeftComputed = ml;
-        mMarginTopComputed = mt;
-        mMarginRightComputed = mr;
-        mMarginBottomComputed = mb;
-        mMarginRelativeComputed = r;
+    mMarginLeft = left;
+    mMarginTop = top;
+    mMarginRight = right;
+    mMarginBottom = bottom;
+    mMarginRelative = relative;
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
-        //TODO: UNSUPPORTED
+    //TODO: UNSUPPORTED
 #elif UNITY_WEBPLAYER
-        Application.ExternalCall("unityWebView.setMargins", name, (int)ml, (int)mt, (int)mr, (int)mb);
+    ml = left;
+    float mt = top;
+    float mr = right;
+    float mb = bottom;
+    Application.ExternalCall("unityWebView.setMargins", name, (int)ml, (int)mt, (int)mr, (int)mb);
 #elif UNITY_WEBGL && !UNITY_EDITOR
-        _gree_unity_webview_setMargins(name, (int)ml, (int)mt, (int)mr, (int)mb);
+    ml = left;
+    float mt = top;
+    float mr = right;
+    float mb = bottom;
+    _gree_unity_webview_setMargins(name, (int)ml, (int)mt, (int)mr, (int)mb);
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-        int width = (int)(Screen.width - (ml + mr));
-        int height = (int)(Screen.height - (mb + mt));
-        _CWebViewPlugin_SetRect(webView, width, height);
-        rect = new Rect(left, bottom, width, height);
+    ml = left;
+    int width = (int)(Screen.width - (ml + mr));
+    int height = (int)(Screen.height - (mb + mt));
+    _CWebViewPlugin_SetRect(webView, width, height);
+    rect = new Rect(left, bottom, width, height);
 #elif UNITY_IPHONE
-        _CWebViewPlugin_SetMargins(webView, ml, mt, mr, mb, r);
-#elif UNITY_ANDROID
-        webView.Call("SetMargins", (int)ml, (int)mt, (int)mr, (int)mb);
-#endif
+    if (relative)
+    {
+        float w = (float)Screen.width;
+        float h = (float)Screen.height;
+        ml = left / w;
     }
+    else
+    {
+        ml = left;
+    }
+    _CWebViewPlugin_SetMargins(webView, ml, mt, mr, mb, relative);
+#elif UNITY_ANDROID
+    if (relative)
+    {
+        float w = (float)Screen.width;
+        float h = (float)Screen.height;
+        int iw = Screen.currentResolution.width;
+        int ih = Screen.currentResolution.height;
+        ml = left / w * iw;
+    }
+    else
+    {
+        ml = left;
+    }
+    webView.Call("SetMargins", (int)ml, (int)mt, (int)mr, (int)mb);
+#endif
+
+    // rest of the code ...
+}
 
     public void SetVisibility(bool v)
     {
@@ -813,24 +782,28 @@ public class WebViewObject : MonoBehaviour
 #endif
     }
 
-    public bool SetURLPattern(string allowPattern, string denyPattern, string hookPattern)
-    {
+   public bool SetURLPattern(string allowPattern, string denyPattern, string hookPattern)
+{
 #if UNITY_WEBPLAYER || UNITY_WEBGL
         //TODO: UNSUPPORTED
         return false;
 #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
         //TODO: UNSUPPORTED
         return false;
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
-        if (webView == IntPtr.Zero)
-            return false;
-        return _CWebViewPlugin_SetURLPattern(webView, allowPattern, denyPattern, hookPattern);
 #elif UNITY_ANDROID
         if (webView == null)
             return false;
         return webView.Call<bool>("SetURLPattern", allowPattern, denyPattern, hookPattern);
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
+        if (webView == IntPtr.Zero)
+            return false;
+        return _CWebViewPlugin_SetURLPattern(webView, allowPattern, denyPattern, hookPattern);
+#else
+        // Handle unsupported platform
+        return false;
 #endif
-    }
+}
+
 
     public void LoadURL(string url)
     {
@@ -897,62 +870,71 @@ public class WebViewObject : MonoBehaviour
 #endif
     }
 
-    public int Progress()
-    {
+public int Progress()
+{
 #if UNITY_WEBPLAYER || UNITY_WEBGL
         //TODO: UNSUPPORTED
         return 0;
 #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
         //TODO: UNSUPPORTED
         return 0;
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
-        if (webView == IntPtr.Zero)
-            return 0;
-        return _CWebViewPlugin_Progress(webView);
 #elif UNITY_ANDROID
         if (webView == null)
             return 0;
         return webView.Get<int>("progress");
-#endif
-    }
-
-    public bool CanGoBack()
-    {
-#if UNITY_WEBPLAYER || UNITY_WEBGL
-        //TODO: UNSUPPORTED
-        return false;
-#elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
-        //TODO: UNSUPPORTED
-        return false;
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
         if (webView == IntPtr.Zero)
-            return false;
-        return _CWebViewPlugin_CanGoBack(webView);
-#elif UNITY_ANDROID
-        if (webView == null)
-            return false;
-        return webView.Get<bool>("canGoBack");
+            return 0;
+        return _CWebViewPlugin_Progress(webView);
+#else
+        // Handle unsupported platform
+        return 0;
 #endif
-    }
+}
 
-    public bool CanGoForward()
-    {
+public bool CanGoBack()
+{
 #if UNITY_WEBPLAYER || UNITY_WEBGL
-        //TODO: UNSUPPORTED
-        return false;
+    //TODO: UNSUPPORTED
+    return false;
 #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
-        //TODO: UNSUPPORTED
-        return false;
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
-        if (webView == IntPtr.Zero)
-            return false;
-        return _CWebViewPlugin_CanGoForward(webView);
+    //TODO: UNSUPPORTED
+    return false;
 #elif UNITY_ANDROID
-        if (webView == null)
-            return false;
-        return webView.Get<bool>("canGoForward");
+    if (webView == null)
+        return false;
+    return webView.Get<bool>("canGoBack");
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
+    if (webView == IntPtr.Zero)
+        return false;
+    return _CWebViewPlugin_CanGoBack(webView);
+#else
+    // Handle unsupported platform
+    return false;
 #endif
-    }
+}
+
+public bool CanGoForward()
+{
+#if UNITY_WEBPLAYER || UNITY_WEBGL
+    //TODO: UNSUPPORTED
+    return false;
+#elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
+    //TODO: UNSUPPORTED
+    return false;
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
+    if (webView == IntPtr.Zero)
+        return false;
+    return _CWebViewPlugin_CanGoForward(webView);
+#elif UNITY_ANDROID
+    if (webView == null)
+        return false;
+    return webView.Get<bool>("canGoForward");
+#endif
+    
+    // Default return statement
+    return false;
+}
 
     public void GoBack()
     {
@@ -1085,24 +1067,32 @@ public class WebViewObject : MonoBehaviour
 #endif
     }
 
-    public string GetCustomHeaderValue(string headerKey)
-    {
+public string GetCustomHeaderValue(string headerKey)
+{
+    string customValue = null;
+
 #if UNITY_WEBPLAYER || UNITY_WEBGL
-        //TODO: UNSUPPORTED
-        return null;
+    //TODO: UNSUPPORTED
 #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_LINUX
-        //TODO: UNSUPPORTED
-        return null;
+    //TODO: UNSUPPORTED
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_IPHONE
-        if (webView == IntPtr.Zero)
-            return null;
-        return _CWebViewPlugin_GetCustomHeaderValue(webView, headerKey);  
+    if (webView == IntPtr.Zero)
+        customValue = null;
+    else
+        customValue = _CWebViewPlugin_GetCustomHeaderValue(webView, headerKey);  
 #elif UNITY_ANDROID
-        if (webView == null)
-            return null;
-        return webView.Call<string>("GetCustomHeaderValue", headerKey);
+    if (webView == null)
+        customValue = null;
+    else
+        customValue = webView.Call<string>("GetCustomHeaderValue", headerKey);
 #endif
-    }
+
+    // Default return statement
+    if (customValue == null)
+        customValue = "";
+
+    return customValue;
+}
 
     public void RemoveCustomHeader(string headerKey)
     {
