@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4453112, g: 0.49495482, b: 0.5739472, a: 1}
+  m_IndirectSpecularColor: {r: 0.4453119, g: 0.49495554, b: 0.5739477, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -10396,9 +10396,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d94439a7dcac6f346b83983516df53ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 159557691}
-  networkManagerObj: {fileID: 987002996}
-  characterName: {fileID: 2011846653}
 --- !u!1 &162636137
 GameObject:
   m_ObjectHideFlags: 0
@@ -55953,7 +55950,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &970369800
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55974,7 +55971,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -8.3, y: 89.5}
+  m_AnchoredPosition: {x: 635.9, y: 597.7}
   m_SizeDelta: {x: 168.5, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &970369801
@@ -57247,7 +57244,9 @@ MonoBehaviour:
   state: 0
   uiPopup: {fileID: 2088206766}
   serverList:
-  - name: Local
+  - name: Staging
+    ip: 137.184.85.203
+  - name: localhost
     ip: 127.0.0.1
   combatLogoutDelay: 5
   selection: -1
