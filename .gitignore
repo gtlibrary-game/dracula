@@ -9,7 +9,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
-
+/[Ss]erver
+/[Ww]ebgl
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
@@ -46,7 +47,7 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
-
+*.sqlite
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
@@ -60,7 +61,7 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.app
-/Database.sqlite
+
 # Crashlytics generated file
 crashlytics-build.properties
 
