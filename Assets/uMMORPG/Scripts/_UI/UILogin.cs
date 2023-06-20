@@ -24,6 +24,7 @@ public partial class UILogin : MonoBehaviour
     public Button cancelButton;
     public Button quitButton;
     public Button resetPasswordButton;
+    public Button pasteButton;
 
 
     public TextMeshProUGUI userNameInput;
@@ -73,9 +74,24 @@ public partial class UILogin : MonoBehaviour
             loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
             loginButton.onClick.SetListener(() => {
-                //  auth.LoginUser();
-                 manager.StartClient();
+                auth.LoginUser();
+                //manager.StartClient();
             });
+
+            pasteButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
+            pasteButton.onClick.SetListener(() => {
+                string javascript = @"
+                    navigator.clipboard.readText().then(function(text) {
+                        unityInstance.SendMessage('ClipboardButton', 'OnClipboardRead', text);
+                    }).catch(function(error) {
+                        unityInstance.SendMessage('ClipboardButton', 'OnClipboardError', error);
+                    });
+                ";
+                Application.ExternalEval(javascript);
+            });
+
+            
+
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.onClick.SetListener(() => { manager.StartHost(); });
@@ -97,5 +113,11 @@ public partial class UILogin : MonoBehaviour
             manager.networkAddress = manager.serverList[serverDropdown.value].ip;
         }
         else panel.SetActive(false);
+    }
+    private void OnClipboardRead(string text) {  
+        Debug.Log("Clipboard text: " + text);
+    }
+    private void OnClipboardError(string error) {
+        Debug.LogError("Clipboard error: " + error);
     }
 }

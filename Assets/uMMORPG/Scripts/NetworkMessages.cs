@@ -9,6 +9,9 @@ public partial struct LoginMsg : NetworkMessage
     public string account;
     public string password;
     public string version;
+
+    public string playFabId;
+    public string sessionTicket;
 }
 
 public partial struct CharacterCreateMsg : NetworkMessage

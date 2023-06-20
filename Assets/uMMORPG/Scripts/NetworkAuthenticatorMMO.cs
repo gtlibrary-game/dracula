@@ -4,6 +4,8 @@ using UnityEngine;
 using Mirror;
 using PlayFab;
 using PlayFab.ClientModels;
+using PlayFab.ServerModels;
+using System.Collections.Generic;
 
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
@@ -39,6 +41,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     }
     void OnError(PlayFabError error) {
         Debug.LogWarning(error);
+        manager.uiPopup.Show("" + error);
     }
 
     public void LoginUser() {
@@ -50,11 +53,12 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
     }
     public void OnLoginSuccess(LoginResult result) {
-        string playFabId = result.PlayFabId;
-        string sessionTicket = result.SessionTicket;
+        playFabId = result.PlayFabId;
+        sessionTicket = result.SessionTicket;
 
         Debug.Log("Logged in with PlayFab ID: " + playFabId);
         Debug.Log("Session ticket: " + sessionTicket);
+
         manager.StartClient();
     }
     public void ResetPassword() {
@@ -88,7 +92,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // Application.version can be modified under:
         // Edit -> Project Settings -> Player -> Bundle Version
         string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
-        LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version};
+        LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version, playFabId=playFabId, sessionTicket=sessionTicket};
         NetworkClient.connection.Send(message);
         Debug.Log("login message was sent");
 
@@ -112,6 +116,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public override void OnServerAuthenticate(NetworkConnectionToClient conn)
     {
         // wait for LoginMsg from client
+
     }
 
     // virtual in case someone wants to modify
@@ -132,6 +137,23 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                Player.onlinePlayers.Values.Any(p => p.account == account);
     }
 
+    Dictionary<string, NetworkConnectionToClient> ticketToConn = new Dictionary<string, NetworkConnectionToClient>();
+
+    void OnAuthenticateSessionTicket(AuthenticateSessionTicketResult result) {
+        Debug.Log("Playfab authenticated...");
+
+        NetworkConnectionToClient conn = ticketToConn[result.UserInfo.PlayFabId];
+
+        // login successful
+        Debug.Log("login successful: " + result.UserInfo.PlayFabId);
+
+        // notify client about successful login. otherwise it
+        // won't accept any further messages.
+        conn.Send(new LoginSuccessMsg());
+
+        // authenticate on server
+        OnServerAuthenticated.Invoke(conn);
+    }
     void OnServerLogin(NetworkConnectionToClient conn, LoginMsg message)
     {
         // correct version?
@@ -141,7 +163,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             if (IsAllowedAccountName(message.account))
             {
                 // validate account info
-                if (Database.singleton.TryLogin(message.account, message.password))
+                if (Database.singleton.TryLogin(message.account, "message.password")) // Always true because we are using playfab to check the passwords. --JRR
                 {
                     // not in lobby and not in world yet?
                     if (!AccountLoggedIn(message.account))
@@ -149,8 +171,21 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         // add to logged in accounts
                         manager.lobby[conn] = message.account;
 
+
+                        // Need to check if the playFab sessionTicket matches the account
+                        var request = new AuthenticateSessionTicketRequest {
+            	            SessionTicket = message.sessionTicket
+        	            };
+                        
+                        ticketToConn[message.playFabId] = conn;
+
+                        PlayFabServerAPI.AuthenticateSessionTicket(request, OnAuthenticateSessionTicket, OnError , conn);
+                        //Debug.Log("result.IsSessionTicketExpired: " + result.IsSessionTicketExpired);
+                        
+
                         // login successful
                         Debug.Log("login successful: " + message.account);
+
 
                         // notify client about successful login. otherwise it
                         // won't accept any further messages.
