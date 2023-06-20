@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Mirror;
 public class UIMainMenu : MonoBehaviour
 {
     public UICharacterCreation uiCharacterCreation;
@@ -20,6 +20,7 @@ public class UIMainMenu : MonoBehaviour
     public GameObject HeroNFTsTab;
 
     public Button GameButton;
+    public Button BookmarkButton;
     void Update()
     {
         
@@ -43,6 +44,11 @@ public class UIMainMenu : MonoBehaviour
                     GameButton.onClick.SetListener(() => {
                             HeroSelectionTab.SetActive(true);
                             HeroNFTsTab.SetActive(false);
+                    });
+
+                    BookmarkButton.onClick.SetListener(()=>{
+                        // NetworkClient.Ready();
+                          
                     });
                 }
             else Hide();

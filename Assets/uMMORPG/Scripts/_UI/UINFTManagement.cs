@@ -56,6 +56,15 @@ public partial class UINFTManagement : MonoBehaviour
         }
     }
 
+    public void test(string a, string b, string c)
+    {
+
+        print(a);
+        print(b);
+        print(c);
+
+    }
+
     public void Hide() { panel.SetActive(false); }
     public void Show() { panel.SetActive(true); }
     public bool IsVisible() { return panel.activeSelf; }

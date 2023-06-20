@@ -311,8 +311,8 @@ public partial class Database : MonoBehaviour
         {
             // demo feature: create account if it doesn't exist yet.
             // note: sqlite-net has no InsertOrIgnore so we do it in two steps
-            if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=?", account) == null)
-                connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
+            // if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=?", account) == null)
+            //     connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
 
             // check account name, password, banned status
             if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=? AND password=? and banned=0", account, password) != null)
@@ -323,6 +323,23 @@ public partial class Database : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public bool TryRegister(string account, string password)
+    {
+         if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=?", account) == null)
+         {        connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
+                 return true;
+         }
+         else{
+            return false;
+         }
+
+    }
+
+    public bool ResetPassword(string account, string password)
+    {
+        return true;
     }
 
     // character data //////////////////////////////////////////////////////////

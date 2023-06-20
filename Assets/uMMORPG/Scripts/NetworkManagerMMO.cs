@@ -22,6 +22,7 @@ public enum NetworkState { Offline, Handshake, Lobby, World }
 [Serializable] public class UnityEventCharactersAvailableMsg : UnityEvent<CharactersAvailableMsg> {}
 [Serializable] public class UnityEventCharacterCreateMsgPlayer : UnityEvent<CharacterCreateMsg, Player> {}
 [Serializable] public class UnityEventStringGameObjectNetworkConnectionCharacterSelectMsg : UnityEvent<string, GameObject, NetworkConnection, CharacterSelectMsg> {}
+[Serializable] public class UnityEventStringGameObjectNetworkConnectionCharacterSelect1Msg : UnityEvent<string, string, string> {}
 [Serializable] public class UnityEventCharacterDeleteMsg : UnityEvent<CharacterDeleteMsg> {}
 [Serializable] public class UnityEventNetworkConnection : UnityEvent<NetworkConnection> {}
 
@@ -84,6 +85,7 @@ public partial class NetworkManagerMMO : NetworkManager
     public UnityEventCharactersAvailableMsg onClientCharactersAvailable;
     public UnityEventCharacterCreateMsgPlayer onServerCharacterCreate;
     public UnityEventStringGameObjectNetworkConnectionCharacterSelectMsg onServerCharacterSelect;
+    // public UnityEventStringGameObjectNetworkConnectionCharacterSelect1Msg OnRegister;
     public UnityEventCharacterDeleteMsg onServerCharacterDelete;
     public UnityEventNetworkConnection onClientDisconnect;
     public UnityEventNetworkConnection onServerDisconnect;
@@ -172,9 +174,11 @@ public partial class NetworkManagerMMO : NetworkManager
     // start & stop ////////////////////////////////////////////////////////////
     public override void OnStartClient()
     {
+        print("==================OnStartClient======================");
         // setup handlers
         NetworkClient.RegisterHandler<ErrorMsg>(OnClientError, false); // allowed before auth!
         NetworkClient.RegisterHandler<CharactersAvailableMsg>(OnClientCharactersAvailable);
+        NetworkClient.RegisterHandler<CharacterSelect1MsgSuccess>(OnCharacterSelect1Msg);
 
         // addon system hooks
         onStartClient.Invoke();
@@ -188,6 +192,7 @@ public partial class NetworkManagerMMO : NetworkManager
         // handshake packet handlers (in OnStartServer so that reconnecting works)
         NetworkServer.RegisterHandler<CharacterCreateMsg>(OnServerCharacterCreate);
         NetworkServer.RegisterHandler<CharacterSelectMsg>(OnServerCharacterSelect);
+        NetworkServer.RegisterHandler<RegisterMsg>(OnRegister);
         NetworkServer.RegisterHandler<CharacterDeleteMsg>(OnServerCharacterDelete);
 
         // invoke saving
@@ -210,6 +215,8 @@ public partial class NetworkManagerMMO : NetworkManager
         // addon system hooks
         onStopServer.Invoke();
     }
+
+    
 
     // handshake: login ////////////////////////////////////////////////////////
     // called on the client if a client connects after successful auth
@@ -302,7 +309,10 @@ public partial class NetworkManagerMMO : NetworkManager
             if (location.childCount > 0)
                 Destroy(location.GetChild(0).gameObject);
     }
-
+    void OnCharacterSelect1Msg(CharacterSelect1MsgSuccess message)
+    {
+        print(message.msg);
+    }
     void OnClientCharactersAvailable(CharactersAvailableMsg message)
     {
         charactersAvailableMsg = message;
@@ -464,10 +474,16 @@ public partial class NetworkManagerMMO : NetworkManager
     // overwrite the original OnServerAddPlayer function so nothing happens if
     // someone sends that message.
     public override void OnServerAddPlayer(NetworkConnectionToClient conn) { Debug.LogWarning("Use the CharacterSelectMsg instead"); }
-
+    void OnRegister(NetworkConnectionToClient conn, RegisterMsg message)
+    {
+        print(message.account);
+        // conn.Send(new CharacterSelect1MsgSuccess{msg="================OnRegister======================"});
+        // OnRegister.Invoke("========OnRegister=========","NetworkConnectionToClient","CharacterSelect1Msg");
+    }
     void OnServerCharacterSelect(NetworkConnectionToClient conn, CharacterSelectMsg message)
     {
-        //Debug.Log("OnServerCharacterSelect");
+        
+        // Debug.Log("OnServerCharacterSelect");
         // only while in lobby (aka after handshake and not ingame)
         if (lobby.ContainsKey(conn))
         {

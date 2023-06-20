@@ -10393,7 +10393,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 159557691}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d94439a7dcac6f346b83983516df53ee, type: 3}
+  m_Script: {fileID: 11500000, guid: c09ac9174a1f1bc4696000aea9b15ca1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 159557691}
@@ -33042,7 +33042,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &557029416
 RectTransform:
   m_ObjectHideFlags: 0
@@ -57151,7 +57151,19 @@ MonoBehaviour:
       m_Calls: []
   OnClientAuthenticated:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 552890773}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   manager: {fileID: 987003002}
   loginAccount: 
   loginPassword: 
@@ -57288,6 +57300,21 @@ MonoBehaviour:
   onServerCharacterSelect:
     m_PersistentCalls:
       m_Calls: []
+  onServerCharacterSelect1:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1805048812}
+        m_TargetAssemblyTypeName: UINFTManagement, uMMORPG
+        m_MethodName: test
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onServerCharacterDelete:
     m_PersistentCalls:
       m_Calls: []
@@ -57338,7 +57365,7 @@ MonoBehaviour:
   serverMaxMessagesPerTick: 10000
   clientMaxMessagesPerTick: 1000
   batchSend: 1
-  waitBeforeSend: 1
+  waitBeforeSend: 0
   clientUseWss: 0
   sslEnabled: 0
   sslCertJson: ./cert.json
@@ -58772,7 +58799,7 @@ PrefabInstance:
     - target: {fileID: 4430664875953142299, guid: 4d00408587bd49f4491a3e909a6f5fcb,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: prevCharacter
+      value: nextCharacter
       objectReference: {fileID: 0}
     - target: {fileID: 4430664875953142299, guid: 4d00408587bd49f4491a3e909a6f5fcb,
         type: 3}
@@ -89884,6 +89911,7 @@ MonoBehaviour:
   HeroNFTsButton: {fileID: 7620824268469145091}
   HeroNFTsTab: {fileID: 1647687051}
   GameButton: {fileID: 7620824268339584571}
+  BookmarkButton: {fileID: 2093311663}
 --- !u!1 &1489251384
 GameObject:
   m_ObjectHideFlags: 0
@@ -104225,7 +104253,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 12.000275}
+  m_AnchoredPosition: {x: 0, y: 12.000366}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1748409325
@@ -113874,7 +113902,7 @@ PrefabInstance:
     - target: {fileID: 4430664875953142299, guid: 4d00408587bd49f4491a3e909a6f5fcb,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: nextCharacter
+      value: prevCharacter
       objectReference: {fileID: 0}
     - target: {fileID: 4430664875953142299, guid: 4d00408587bd49f4491a3e909a6f5fcb,
         type: 3}
@@ -116431,7 +116459,7 @@ PrefabInstance:
     - target: {fileID: 7620824269988445975, guid: 5529cd024323ee443a6a183aa71540b9,
         type: 3}
       propertyPath: m_Name
-      value: Button 8 (5)
+      value: BookMarkButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5529cd024323ee443a6a183aa71540b9, type: 3}
@@ -125049,6 +125077,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2090580181}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2093311663 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7620824269988445973, guid: 5529cd024323ee443a6a183aa71540b9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1960990041}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2093769323
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -36,8 +36,15 @@ public partial class UILogin : MonoBehaviour
             string last = PlayerPrefs.GetString("LastServer", "");
             serverDropdown.value = manager.serverList.FindIndex(s => s.name == last);
         }
+        Invoke("ConnectServer", 2f);
     }
-
+    void ConnectServer()
+    {
+        if (manager.state == NetworkState.Offline || manager.state == NetworkState.Handshake)
+        {
+            manager.StartClient();
+        }
+    }
     void OnDestroy()
     {
         // save last server by name in case order changes some day
@@ -64,17 +71,19 @@ public partial class UILogin : MonoBehaviour
 
             // buttons. interactable while network is not active
             // (using IsConnecting is slightly delayed and would allow multiple clicks)
-            registerButton.interactable = !manager.isNetworkActive;
-            registerButton.onClick.SetListener(() => { auth.RegisterEmail(); });
+            registerButton.interactable = manager.isNetworkActive;
+            registerButton.onClick.SetListener(() => { 
+                // NetworkClient.Ready();
+                // NetworkClient.Send(new RegisterMsg{ account="========================BookmarkButton====================" });
+             });
 
-            resetPasswordButton.interactable = !manager.isNetworkActive;
+            resetPasswordButton.interactable = manager.isNetworkActive;
             resetPasswordButton.onClick.SetListener(() => { auth.ResetPassword(); });
-
-            loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
+            loginButton.interactable = manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
             loginButton.onClick.SetListener(() => {
-                //  auth.LoginUser();
-                 manager.StartClient();
+                auth.OnClientAuthenticate();
+
             });
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);

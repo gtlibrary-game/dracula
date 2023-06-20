@@ -10,6 +10,16 @@ public partial struct LoginMsg : NetworkMessage
     public string password;
     public string version;
 }
+public partial struct RegisterMsg : NetworkMessage
+{
+    public string account;
+    public string password;
+}
+// public partial struct ResetPasswordMsg : NetworkMessage
+// {
+//     public string account;
+//     public string password;
+// }
 
 public partial struct CharacterCreateMsg : NetworkMessage
 {
@@ -21,6 +31,10 @@ public partial struct CharacterCreateMsg : NetworkMessage
 public partial struct CharacterSelectMsg : NetworkMessage
 {
     public int index;
+}
+public partial struct CharacterSelect1Msg : NetworkMessage
+{
+    public string index;
 }
 
 public partial struct CharacterDeleteMsg : NetworkMessage
@@ -40,6 +54,12 @@ public partial struct ErrorMsg : NetworkMessage
 public partial struct LoginSuccessMsg : NetworkMessage
 {
 }
+public partial struct CharacterSelect1MsgSuccess : NetworkMessage
+{
+    public string msg;
+}
+
+
 
 public partial struct CharactersAvailableMsg : NetworkMessage
 {

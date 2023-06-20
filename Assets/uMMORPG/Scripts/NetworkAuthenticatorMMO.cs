@@ -29,13 +29,13 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             RequireBothUsernameAndEmail = false
         }; 
         
-        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+        // PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
         Debug.Log("In register");
     }
     //void OnRegisterSuccess(RegisterPlayFabUserResult result) {
     void OnRegisterSuccess(RegisterPlayFabUserResult result) {
         Debug.LogWarning("You are now registred.");
-        //PlayFabClientAPI.Logout();
+        // PlayFabClientAPI.Logout();
     }
     void OnError(PlayFabError error) {
         Debug.LogWarning(error);
@@ -78,6 +78,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     public override void OnClientAuthenticate()
     {
+        print("=================OnClientAuthenticate================");
         // send login packet with hashed password, so that the original one
         // never leaves the player's computer.
         //
@@ -107,6 +108,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     {
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
+        // NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
+        // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
     }
 
     public override void OnServerAuthenticate(NetworkConnectionToClient conn)
@@ -132,15 +135,25 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                Player.onlinePlayers.Values.Any(p => p.account == account);
     }
 
+    // void OnServerRegister(NetworkConnectionToClient conn, RegisterMsg message)
+    // {
+
+    // }
+    // void OnServerResetPassword(NetworkConnectionToClient conn, ResetPasswordMsg message)
+    // {
+
+    // }
     void OnServerLogin(NetworkConnectionToClient conn, LoginMsg message)
     {
+        print("=======================NetworkConnectionToClient==========================");
+       
         // correct version?
         if (message.version == Application.version)
         {
             // allowed account name?
             if (IsAllowedAccountName(message.account))
             {
-                // validate account info
+               
                 if (Database.singleton.TryLogin(message.account, message.password))
                 {
                     // not in lobby and not in world yet?
@@ -173,7 +186,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                 else
                 {
                     //Debug.Log("invalid account or password for: " + message.account); <- don't show on live server
-                    manager.ServerSendError(conn, "invalid account", true);
+                    manager.ServerSendError(conn, "Please register new account", true);
                 }
             }
             else
