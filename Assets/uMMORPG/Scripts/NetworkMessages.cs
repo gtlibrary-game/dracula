@@ -54,6 +54,16 @@ public partial struct ErrorMsg : NetworkMessage
 public partial struct LoginSuccessMsg : NetworkMessage
 {
 }
+
+public partial struct LoginWrongUser : NetworkMessage
+{
+    public string msg;
+}
+public partial struct LoginWrongPassword : NetworkMessage
+{
+    public string msg;
+}
+
 public partial struct CharacterSelect1MsgSuccess : NetworkMessage
 {
     public string msg;

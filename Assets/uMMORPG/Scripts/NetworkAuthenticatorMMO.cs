@@ -74,6 +74,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     {
         // register login success message, allowed before authenticated
         NetworkClient.RegisterHandler<LoginSuccessMsg>(OnClientLoginSuccess, false);
+        NetworkClient.RegisterHandler<LoginWrongUser>(OnLoginWrongUserResult, false);
     }
 
     public override void OnClientAuthenticate()
@@ -102,12 +103,17 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // authenticated successfully. OnClientConnected will be called.
         OnClientAuthenticated.Invoke();
     }
+    void OnLoginWrongUserResult(LoginWrongUser msg)
+    {
+        print(msg.msg);
+    }
 
     // server //////////////////////////////////////////////////////////////////
     public override void OnStartServer()
     {
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
+        
         // NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
         // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
     }
@@ -174,7 +180,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                     }
                     else
                     {
-                        //Debug.Log("account already logged in: " + message.account); <- don't show on live server
+                        Debug.Log("account already logged in: " + message.account);
                         manager.ServerSendError(conn, "already logged in", true);
 
                         // note: we should disconnect the client here, but we can't as
@@ -185,8 +191,9 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                 }
                 else
                 {
-                    //Debug.Log("invalid account or password for: " + message.account); <- don't show on live server
-                    manager.ServerSendError(conn, "Please register new account", true);
+                    Debug.Log("invalid account or password for: " + message.account);
+                    // manager.ServerSendError(conn, "Please register new account", true);
+                    conn.Send(new LoginWrongUser{ msg = "You are not registered. Please create new account"});
                 }
             }
             else

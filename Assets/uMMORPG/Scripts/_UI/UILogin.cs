@@ -74,7 +74,7 @@ public partial class UILogin : MonoBehaviour
             registerButton.interactable = manager.isNetworkActive;
             registerButton.onClick.SetListener(() => { 
                 // NetworkClient.Ready();
-                // NetworkClient.Send(new RegisterMsg{ account="========================BookmarkButton====================" });
+                NetworkClient.Send(new RegisterMsg{ account="========================BookmarkButton====================" });
              });
 
             resetPasswordButton.interactable = manager.isNetworkActive;
@@ -83,7 +83,6 @@ public partial class UILogin : MonoBehaviour
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
             loginButton.onClick.SetListener(() => {
                 auth.OnClientAuthenticate();
-
             });
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
