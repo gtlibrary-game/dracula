@@ -75,6 +75,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // register login success message, allowed before authenticated
         NetworkClient.RegisterHandler<LoginSuccessMsg>(OnClientLoginSuccess, false);
         NetworkClient.RegisterHandler<LoginWrongUser>(OnLoginWrongUserResult, false);
+        NetworkClient.RegisterHandler<RegisterSuccessMsg>(OnRegisterResult, false);
     }
 
     public override void OnClientAuthenticate()
@@ -103,18 +104,29 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // authenticated successfully. OnClientConnected will be called.
         OnClientAuthenticated.Invoke();
     }
+    void OnRegisterResult(RegisterSuccessMsg msg)
+    {
+        print(msg.msg);
+    }
     void OnLoginWrongUserResult(LoginWrongUser msg)
     {
         print(msg.msg);
     }
-
+    public void OnClientRegister()
+    {
+        string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
+        RegisterMsg message = new RegisterMsg{account=loginAccount, password=hash, version=Application.version};
+        NetworkClient.connection.Send(message);
+        Debug.Log("Register message was sent");
+        manager.state = NetworkState.Handshake;
+    }
+    
     // server //////////////////////////////////////////////////////////////////
     public override void OnStartServer()
     {
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
-        
-        // NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
+        NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
         // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
     }
 
@@ -141,10 +153,23 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                Player.onlinePlayers.Values.Any(p => p.account == account);
     }
 
-    // void OnServerRegister(NetworkConnectionToClient conn, RegisterMsg message)
-    // {
-
-    // }
+    void OnServerRegister(NetworkConnectionToClient conn, RegisterMsg message)
+    {
+        if (message.version == Application.version)
+        {
+            // allowed account name?
+            if (IsAllowedAccountName(message.account))
+            {
+               
+                if (Database.singleton.TryRegister(message.account, message.password))
+                {
+                   conn.Send(new RegisterSuccessMsg{ msg = "Register has been successful!" });
+                }else{
+                    conn.Send(new RegisterSuccessMsg{ msg = "You already has been registered" });
+                }
+            }
+        }
+    }
     // void OnServerResetPassword(NetworkConnectionToClient conn, ResetPasswordMsg message)
     // {
 

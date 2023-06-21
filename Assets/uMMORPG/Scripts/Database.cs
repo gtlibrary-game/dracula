@@ -328,18 +328,13 @@ public partial class Database : MonoBehaviour
     public bool TryRegister(string account, string password)
     {
          if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=?", account) == null)
-         {        connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
-                 return true;
+         {      connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
+                return true;
          }
          else{
             return false;
          }
 
-    }
-
-    public bool ResetPassword(string account, string password)
-    {
-        return true;
     }
 
     // character data //////////////////////////////////////////////////////////

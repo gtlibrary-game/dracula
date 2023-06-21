@@ -14,6 +14,7 @@ public partial struct RegisterMsg : NetworkMessage
 {
     public string account;
     public string password;
+    public string version;
 }
 // public partial struct ResetPasswordMsg : NetworkMessage
 // {
@@ -63,7 +64,10 @@ public partial struct LoginWrongPassword : NetworkMessage
 {
     public string msg;
 }
-
+public partial struct RegisterSuccessMsg : NetworkMessage
+{
+    public string msg;
+}
 public partial struct CharacterSelect1MsgSuccess : NetworkMessage
 {
     public string msg;

@@ -73,8 +73,7 @@ public partial class UILogin : MonoBehaviour
             // (using IsConnecting is slightly delayed and would allow multiple clicks)
             registerButton.interactable = manager.isNetworkActive;
             registerButton.onClick.SetListener(() => { 
-                // NetworkClient.Ready();
-                NetworkClient.Send(new RegisterMsg{ account="========================BookmarkButton====================" });
+                auth.OnClientRegister();
              });
 
             resetPasswordButton.interactable = manager.isNetworkActive;

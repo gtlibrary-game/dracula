@@ -192,7 +192,6 @@ public partial class NetworkManagerMMO : NetworkManager
         // handshake packet handlers (in OnStartServer so that reconnecting works)
         NetworkServer.RegisterHandler<CharacterCreateMsg>(OnServerCharacterCreate);
         NetworkServer.RegisterHandler<CharacterSelectMsg>(OnServerCharacterSelect);
-        NetworkServer.RegisterHandler<RegisterMsg>(OnRegister);
         NetworkServer.RegisterHandler<CharacterDeleteMsg>(OnServerCharacterDelete);
 
         // invoke saving
@@ -474,12 +473,7 @@ public partial class NetworkManagerMMO : NetworkManager
     // overwrite the original OnServerAddPlayer function so nothing happens if
     // someone sends that message.
     public override void OnServerAddPlayer(NetworkConnectionToClient conn) { Debug.LogWarning("Use the CharacterSelectMsg instead"); }
-    void OnRegister(NetworkConnectionToClient conn, RegisterMsg message)
-    {
-        print(message.account);
-        // conn.Send(new CharacterSelect1MsgSuccess{msg="================OnRegister======================"});
-        // OnRegister.Invoke("========OnRegister=========","NetworkConnectionToClient","CharacterSelect1Msg");
-    }
+
     void OnServerCharacterSelect(NetworkConnectionToClient conn, CharacterSelectMsg message)
     {
         
