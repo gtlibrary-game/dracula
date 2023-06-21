@@ -174,10 +174,10 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     // {
 
     // }
+    
     void OnServerLogin(NetworkConnectionToClient conn, LoginMsg message)
     {
         print("=======================NetworkConnectionToClient==========================");
-       
         // correct version?
         if (message.version == Application.version)
         {
@@ -185,7 +185,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             if (IsAllowedAccountName(message.account))
             {
                
-                if (Database.singleton.TryLogin(message.account, message.password))
+                if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.Success)
                 {
                     // not in lobby and not in world yet?
                     if (!AccountLoggedIn(message.account))
@@ -214,11 +214,17 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         //conn.Disconnect();
                     }
                 }
-                else
+                else if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.WrongPassword)
                 {
-                    Debug.Log("invalid account or password for: " + message.account);
+                    Debug.Log("invalid password for: " + message.account);
                     // manager.ServerSendError(conn, "Please register new account", true);
-                    conn.Send(new LoginWrongUser{ msg = "You are not registered. Please create new account"});
+                    conn.Send(new LoginWrongUser{ msg = "invalid password for: " + message.account});
+                }
+                else if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.NotRegistered)
+                {
+                    Debug.Log("invalid account for: " + message.account);
+                    // manager.ServerSendError(conn, "Please register new account", true);
+                    conn.Send(new LoginWrongUser{ msg = "You are not registered. Please register. " + message.account});
                 }
             }
             else

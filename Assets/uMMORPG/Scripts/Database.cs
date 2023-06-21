@@ -266,7 +266,14 @@ public partial class Database : MonoBehaviour
     // try to log in with an account.
     // -> not called 'CheckAccount' or 'IsValidAccount' because it both checks
     //    if the account is valid AND sets the lastlogin field
-    public bool TryLogin(string account, string password)
+    public enum LoginEnum
+    {
+        NotRegistered,
+        WrongPassword,
+        Success,
+        WrongCharacter
+    }
+    public LoginEnum TryLogin(string account, string password)
     {
         // this function can be used to verify account credentials in a database
         // or a content management system.
@@ -315,14 +322,18 @@ public partial class Database : MonoBehaviour
             //     connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
 
             // check account name, password, banned status
-            if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=? AND password=? and banned=0", account, password) != null)
+            if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=? and banned=0", account) != null)
             {
                 // save last login time and return true
-                connection.Execute("UPDATE accounts SET lastlogin=? WHERE name=?", DateTime.UtcNow, account);
-                return true;
-            }
+                if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=? AND password=? and banned=0", account,password) != null){
+                    connection.Execute("UPDATE accounts SET lastlogin=? WHERE name=?", DateTime.UtcNow, account);
+                    return LoginEnum.Success;
+                }else return LoginEnum.WrongPassword;
+                
+            }else return LoginEnum.NotRegistered;
+
         }
-        return false;
+        return LoginEnum.WrongCharacter;
     }
 
     public bool TryRegister(string account, string password)
