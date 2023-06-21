@@ -13,6 +13,17 @@ public partial struct LoginMsg : NetworkMessage
     public string playFabId;
     public string sessionTicket;
 }
+public partial struct RegisterMsg : NetworkMessage
+{
+    public string account;
+    public string password;
+    public string version;
+}
+// public partial struct ResetPasswordMsg : NetworkMessage
+// {
+//     public string account;
+//     public string password;
+// }
 
 public partial struct CharacterCreateMsg : NetworkMessage
 {
@@ -24,6 +35,10 @@ public partial struct CharacterCreateMsg : NetworkMessage
 public partial struct CharacterSelectMsg : NetworkMessage
 {
     public int index;
+}
+public partial struct CharacterSelect1Msg : NetworkMessage
+{
+    public string index;
 }
 
 public partial struct CharacterDeleteMsg : NetworkMessage
@@ -43,6 +58,25 @@ public partial struct ErrorMsg : NetworkMessage
 public partial struct LoginSuccessMsg : NetworkMessage
 {
 }
+
+public partial struct LoginWrongUser : NetworkMessage
+{
+    public string msg;
+}
+public partial struct LoginWrongPassword : NetworkMessage
+{
+    public string msg;
+}
+public partial struct RegisterSuccessMsg : NetworkMessage
+{
+    public string msg;
+}
+public partial struct CharacterSelect1MsgSuccess : NetworkMessage
+{
+    public string msg;
+}
+
+
 
 public partial struct CharactersAvailableMsg : NetworkMessage
 {

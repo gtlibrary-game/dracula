@@ -31,13 +31,13 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             RequireBothUsernameAndEmail = false
         }; 
         
-        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+        // PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
         Debug.Log("In register");
     }
     //void OnRegisterSuccess(RegisterPlayFabUserResult result) {
     void OnRegisterSuccess(RegisterPlayFabUserResult result) {
         Debug.LogWarning("You are now registred.");
-        //PlayFabClientAPI.Logout();
+        // PlayFabClientAPI.Logout();
     }
     void OnError(PlayFabError error) {
         Debug.LogWarning(error);
@@ -78,10 +78,13 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     {
         // register login success message, allowed before authenticated
         NetworkClient.RegisterHandler<LoginSuccessMsg>(OnClientLoginSuccess, false);
+        NetworkClient.RegisterHandler<LoginWrongUser>(OnLoginWrongUserResult, false);
+        NetworkClient.RegisterHandler<RegisterSuccessMsg>(OnRegisterResult, false);
     }
 
     public override void OnClientAuthenticate()
     {
+        print("=================OnClientAuthenticate================");
         // send login packet with hashed password, so that the original one
         // never leaves the player's computer.
         //
@@ -105,12 +108,30 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // authenticated successfully. OnClientConnected will be called.
         OnClientAuthenticated.Invoke();
     }
-
+    void OnRegisterResult(RegisterSuccessMsg msg)
+    {
+        print(msg.msg);
+    }
+    void OnLoginWrongUserResult(LoginWrongUser msg)
+    {
+        print(msg.msg);
+    }
+    public void OnClientRegister()
+    {
+        string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
+        RegisterMsg message = new RegisterMsg{account=loginAccount, password=hash, version=Application.version};
+        NetworkClient.connection.Send(message);
+        Debug.Log("Register message was sent");
+        manager.state = NetworkState.Handshake;
+    }
+    
     // server //////////////////////////////////////////////////////////////////
     public override void OnStartServer()
     {
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
+        NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
+        // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
     }
 
     public override void OnServerAuthenticate(NetworkConnectionToClient conn)
@@ -137,6 +158,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                Player.onlinePlayers.Values.Any(p => p.account == account);
     }
 
+<<<<<<< HEAD
     Dictionary<string, NetworkConnectionToClient> ticketToConn = new Dictionary<string, NetworkConnectionToClient>();
 
     void OnAuthenticateSessionTicket(AuthenticateSessionTicketResult result) {
@@ -154,16 +176,46 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // authenticate on server
         OnServerAuthenticated.Invoke(conn);
     }
+=======
+    void OnServerRegister(NetworkConnectionToClient conn, RegisterMsg message)
+    {
+        if (message.version == Application.version)
+        {
+            // allowed account name?
+            if (IsAllowedAccountName(message.account))
+            {
+               
+                if (Database.singleton.TryRegister(message.account, message.password))
+                {
+                   conn.Send(new RegisterSuccessMsg{ msg = "Register has been successful!" });
+                }else{
+                    conn.Send(new RegisterSuccessMsg{ msg = "You already has been registered" });
+                }
+            }
+        }
+    }
+    // void OnServerResetPassword(NetworkConnectionToClient conn, ResetPasswordMsg message)
+    // {
+
+    // }
+    
+>>>>>>> origin/main
     void OnServerLogin(NetworkConnectionToClient conn, LoginMsg message)
     {
+        print("=======================NetworkConnectionToClient==========================");
         // correct version?
         if (message.version == Application.version)
         {
             // allowed account name?
             if (IsAllowedAccountName(message.account))
             {
+<<<<<<< HEAD
                 // validate account info
                 if (Database.singleton.TryLogin(message.account, "message.password")) // Always true because we are using playfab to check the passwords. --JRR
+=======
+               
+                if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.Success)
+>>>>>>> origin/main
                 {
                     // not in lobby and not in world yet?
                     if (!AccountLoggedIn(message.account))
@@ -196,7 +248,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                     }
                     else
                     {
-                        //Debug.Log("account already logged in: " + message.account); <- don't show on live server
+                        Debug.Log("account already logged in: " + message.account);
                         manager.ServerSendError(conn, "already logged in", true);
 
                         // note: we should disconnect the client here, but we can't as
@@ -205,10 +257,17 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         //conn.Disconnect();
                     }
                 }
-                else
+                else if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.WrongPassword)
                 {
-                    //Debug.Log("invalid account or password for: " + message.account); <- don't show on live server
-                    manager.ServerSendError(conn, "invalid account", true);
+                    Debug.Log("invalid password for: " + message.account);
+                    // manager.ServerSendError(conn, "Please register new account", true);
+                    conn.Send(new LoginWrongUser{ msg = "invalid password for: " + message.account});
+                }
+                else if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.NotRegistered)
+                {
+                    Debug.Log("invalid account for: " + message.account);
+                    // manager.ServerSendError(conn, "Please register new account", true);
+                    conn.Send(new LoginWrongUser{ msg = "You are not registered. Please register. " + message.account});
                 }
             }
             else

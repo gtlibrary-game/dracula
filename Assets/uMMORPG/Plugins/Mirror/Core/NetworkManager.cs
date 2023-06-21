@@ -344,16 +344,13 @@ namespace Mirror
         void SetupClient()
         {
             InitializeSingleton();
-
             if (runInBackground)
                 Application.runInBackground = true;
-
             if (authenticator != null)
             {
                 authenticator.OnStartClient();
                 authenticator.OnClientAuthenticated.AddListener(OnClientAuthenticated);
             }
-
             // NetworkClient.sendRate = clientSendRate;
         }
 
@@ -380,7 +377,7 @@ namespace Mirror
                 Debug.LogError("Must set the Network Address field in the manager");
                 return;
             }
-            // Debug.Log($"NetworkManager StartClient address:{networkAddress}");
+            // // Debug.Log($"NetworkManager StartClient address:{networkAddress}");
 
             NetworkClient.Connect(networkAddress);
 
@@ -700,7 +697,7 @@ namespace Mirror
             NetworkServer.ReplaceHandler<ReadyMessage>(OnServerReadyMessageInternal);
         }
 
-        void RegisterClientMessages()
+        public void RegisterClientMessages()
         {
             NetworkClient.OnConnectedEvent = OnClientConnectInternal;
             NetworkClient.OnDisconnectedEvent = OnClientDisconnectInternal;
@@ -1148,14 +1145,14 @@ namespace Mirror
             OnServerAddPlayer(conn);
         }
 
-        void OnClientConnectInternal()
+        public void OnClientConnectInternal()
         {
-            //Debug.Log("NetworkManager.OnClientConnectInternal");
+            Debug.Log("NetworkManager.OnClientConnectInternal");
 
             if (authenticator != null)
             {
                 // we have an authenticator - let it handle authentication
-                authenticator.OnClientAuthenticate();
+                // authenticator.OnClientAuthenticate();
             }
             else
             {
@@ -1167,7 +1164,7 @@ namespace Mirror
         // called after successful authentication
         void OnClientAuthenticated()
         {
-            //Debug.Log("NetworkManager.OnClientAuthenticated");
+            Debug.Log("NetworkManager.OnClientAuthenticated");
 
             // set connection to authenticated
             NetworkClient.connection.isAuthenticated = true;
