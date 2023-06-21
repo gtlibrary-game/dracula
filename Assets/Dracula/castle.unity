@@ -51445,8 +51445,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 253.46796, y: -69.15715}
-  m_SizeDelta: {x: 506.9359, y: 138.3143}
+  m_AnchoredPosition: {x: 224.39542, y: -69.15715}
+  m_SizeDelta: {x: 448.79083, y: 138.3143}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &906336360
 GameObject:
@@ -57300,21 +57300,6 @@ MonoBehaviour:
   onServerCharacterSelect:
     m_PersistentCalls:
       m_Calls: []
-  onServerCharacterSelect1:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1805048812}
-        m_TargetAssemblyTypeName: UINFTManagement, uMMORPG
-        m_MethodName: test
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   onServerCharacterDelete:
     m_PersistentCalls:
       m_Calls: []
@@ -85976,8 +85961,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 760.4039, y: -69.15715}
-  m_SizeDelta: {x: 506.9359, y: 138.3143}
+  m_AnchoredPosition: {x: 673.1863, y: -69.15715}
+  m_SizeDelta: {x: 448.79083, y: 138.3143}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &1423404655 stripped
 RectTransform:
@@ -119755,8 +119740,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1267.3398, y: -69.15715}
-  m_SizeDelta: {x: 506.9359, y: 138.3143}
+  m_AnchoredPosition: {x: 1121.977, y: -69.15715}
+  m_SizeDelta: {x: 448.79083, y: 138.3143}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2011846653
 GameObject:

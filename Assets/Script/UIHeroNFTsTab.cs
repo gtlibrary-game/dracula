@@ -20,7 +20,8 @@ public class UIHeroNFTsTab : MonoBehaviour
 
     void OnEnable(){
 
-        nftManager.GetComponent<NFTManager>().getBookmarkByWallet();
+        // nftManager.GetComponent<NFTManager>().getBookmarkByWallet();
+        nftManager.GetComponent<NFTManager>().IsConnectedWallet();
 
         handleCharacterDropdown();
     }
@@ -35,13 +36,15 @@ public class UIHeroNFTsTab : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        print(nftManager.GetComponent<NFTManager>().walletFlg);
+        createHeroButton.interactable = nftManager.GetComponent<NFTManager>().walletFlg;
         createHeroButton.onClick.SetListener(() => {
-            CharacterCreateMsg message = new CharacterCreateMsg {
-                name = nameInput.text,
-                classIndex = characterDropDown.value,
-                gameMaster = false
-            };
-            NetworkClient.Send(message);
+            // CharacterCreateMsg message = new CharacterCreateMsg {
+            //     name = nameInput.text,
+            //     classIndex = characterDropDown.value,
+            //     gameMaster = false
+            // };
+            // NetworkClient.Send(message);
         });
     }
 }

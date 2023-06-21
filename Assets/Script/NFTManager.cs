@@ -30,7 +30,7 @@ public class NFTManager : MonoBehaviour
     
     void Start()
     {
-       IsConnectedWallet();
+       
     }
     void Update(){
         return;
@@ -53,7 +53,7 @@ public class NFTManager : MonoBehaviour
             print("You have to conntect to your wallet!");
 
             try{
-                // ConnectWalletButton.GetComponent<Prefab_ConnectWallet>().WalletConnect();
+                ConnectWalletButton.GetComponent<Prefab_ConnectWallet>().WalletConnect();
             }
             catch (Exception ex) {}
 
