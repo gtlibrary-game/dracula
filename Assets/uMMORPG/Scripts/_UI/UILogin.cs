@@ -82,9 +82,7 @@ public partial class UILogin : MonoBehaviour
             loginButton.interactable = manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
             loginButton.onClick.SetListener(() => {
-                auth.LoginUser();
-                //manager.StartClient();
-                //auth.OnClientAuthenticate();
+                auth.OnClientAuthenticate();
             });
 
             pasteButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
