@@ -57505,10 +57505,10 @@ MonoBehaviour:
   state: 0
   uiPopup: {fileID: 2088206766}
   serverList:
-  - name: Staging
-    ip: 137.184.85.203
   - name: localhost
-    ip: 127.0.0.1
+    ip: localhost
+  - name: staging
+    ip: 137.184.85.203
   combatLogoutDelay: 5
   selection: -1
   selectionLocations:

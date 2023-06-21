@@ -184,15 +184,15 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         
 
                         // login successful
-                        Debug.Log("login successful: " + message.account);
+                        //Debug.Log("login successful: " + message.account);
 
 
                         // notify client about successful login. otherwise it
                         // won't accept any further messages.
-                        conn.Send(new LoginSuccessMsg());
+                        //conn.Send(new LoginSuccessMsg());
 
                         // authenticate on server
-                        OnServerAuthenticated.Invoke(conn);
+                        //OnServerAuthenticated.Invoke(conn);
                     }
                     else
                     {
