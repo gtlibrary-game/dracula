@@ -18,7 +18,7 @@ public class NFTManager : MonoBehaviour
     // public string waletAddress;
     // List<Contract> contracts = new List<Contract>();
     // public List<NFT> ownedNFT;
-    string conttAddress = "0x842487Dab0ab5ad5285409069Ddd790D02A4f3BB";
+    string conttAddress = "0x37D37a45F41F5f389Fd533c9dF8deeeB37D9Cd84";
     string walletAddress;
     public GameObject CanvasMng;
     public int NextTokenId;
@@ -27,7 +27,15 @@ public class NFTManager : MonoBehaviour
     public GameObject LoginButton;
     public GameObject RegisterButton;
     public GameObject ConnectWalletButton;
-    
+    Dictionary<string, int> classValues = new Dictionary<string, int>
+    {
+        {"Warrior", 15},
+        {"elf_assassin", 45},
+        {"Archer", 75},
+        // {"ThiefUnit", 105},
+        // {"MageUnit", 135}
+    };
+
     void Start()
     {
        
@@ -71,7 +79,7 @@ public class NFTManager : MonoBehaviour
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
         walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
       
-        // var nfts = await contract.ERC721.GetOwned();
+        var nfts = await contract.ERC721.GetOwned();
         var nftCnt = await contract.ERC721.Balance();
         if(int.Parse(nftCnt)>0)
         {
@@ -83,7 +91,7 @@ public class NFTManager : MonoBehaviour
             // GameObject.Find("Canvas").GetComponent<MainMenuManager>().ClickNewChar();
         } 
        
-        var nfts = await contract.ERC721.GetOwned();
+        // var nfts = await contract.ERC721.GetOwned();
 
         foreach (var item in nfts)
         {
@@ -95,9 +103,13 @@ public class NFTManager : MonoBehaviour
         return await contract.Read<int>("_getNextTokenId");
         // return NextTokenId;
     }
-    public async void heroMint(){
+    public async Task heroMint(string heroName){
+
+        int druidValue = classValues[heroName];
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
-        await contract.Write("heroMint","1",walletAddress,"4","1000000000000000000");
+        walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+        var resultMint = await contract.Write("heroMint","1",walletAddress,druidValue.ToString(),"1000000000000000000");
+        print(resultMint);
     }
 
     public async void heroBurn(string i){

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,32 @@ public class UIHeroNFTsTab : MonoBehaviour
     void OnEnable(){
 
         // nftManager.GetComponent<NFTManager>().getBookmarkByWallet();
+        
         nftManager.GetComponent<NFTManager>().IsConnectedWallet();
-
         handleCharacterDropdown();
+        createHeroButton.onClick.RemoveAllListeners();
+        createHeroButton.onClick.AddListener(async () =>
+        {
+            print("===============createHeroButton=============");
+            NFTManager nFTManagerCS = nftManager.GetComponent<NFTManager>();
+            string currentOptionText = characterDropDown.options[characterDropDown.value].text;
+            await nFTManagerCS.heroMint(currentOptionText);
+            try
+            {
+                var message = new CharacterCreateMsg
+                {
+                    name = nameInput.text,
+                    classIndex = characterDropDown.value,
+                    // heroTokenId = newTokenId,
+                    gameMaster = false
+                };
+                NetworkClient.Send(message);
+            }
+            catch (Exception ex)
+            {
+                // Handle the error here
+            }
+        });
     }
 
     public void handleCharacterDropdown(){
@@ -36,15 +60,8 @@ public class UIHeroNFTsTab : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print(nftManager.GetComponent<NFTManager>().walletFlg);
-        createHeroButton.interactable = nftManager.GetComponent<NFTManager>().walletFlg;
-        createHeroButton.onClick.SetListener(() => {
-            // CharacterCreateMsg message = new CharacterCreateMsg {
-            //     name = nameInput.text,
-            //     classIndex = characterDropDown.value,
-            //     gameMaster = false
-            // };
-            // NetworkClient.Send(message);
-        });
+        NFTManager nFTManagerCS = nftManager.GetComponent<NFTManager>();
+        createHeroButton.interactable = nFTManagerCS.walletFlg;
+        
     }
 }
