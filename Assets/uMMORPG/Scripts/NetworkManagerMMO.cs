@@ -60,7 +60,7 @@ public partial class NetworkManagerMMO : NetworkManager
 
     [Header("Logout")]
     [Tooltip("Players shouldn't be able to log out instantly to flee combat. There should be a delay.")]
-    public float combatLogoutDelay = 5;
+    public float combatLogoutDelay = 0;
 
     [Header("Character Selection")]
     public int selection = -1;
@@ -69,7 +69,7 @@ public partial class NetworkManagerMMO : NetworkManager
     [HideInInspector] public List<Player> playerClasses = new List<Player>(); // cached in Awake
 
     [Header("Database")]
-    public int characterLimit = 4;
+    public int characterLimit = 40000;
     public int characterNameMaxLength = 16;
     public float saveInterval = 60f; // in seconds
 
@@ -253,6 +253,7 @@ public partial class NetworkManagerMMO : NetworkManager
 
     // helper function to make a CharactersAvailableMsg from all characters in
     // an account
+    // This gets called when a new char is created as well as when user selects the create screen.
     CharactersAvailableMsg MakeCharactersAvailableMessage(string account)
     {
         // load from database
@@ -408,7 +409,7 @@ public partial class NetworkManagerMMO : NetworkManager
                 if (!Database.singleton.CharacterExists(message.name))
                 {
                     // not too may characters created yet?
-                    if (Database.singleton.CharactersForAccount(account).Count < characterLimit)
+                    if (true || Database.singleton.CharactersForAccount(account).Count < characterLimit)
                     {
                         // valid class index?
                         if (0 <= message.classIndex && message.classIndex < playerClasses.Count)
@@ -420,6 +421,8 @@ public partial class NetworkManagerMMO : NetworkManager
                             {
                                 // create new character based on the prefab.
                                 Player player = CreateCharacter(playerClasses[message.classIndex].gameObject, message.name, account, message.gameMaster);
+
+                                ServerSendError(conn, "New character created: " + message.name + " " + account, false);
 
                                 // addon system hooks
                                 onServerCharacterCreate.Invoke(message, player);

@@ -58,6 +58,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
         Debug.Log("Logged in with PlayFab ID: " + playFabId);
         Debug.Log("Session ticket: " + sessionTicket);
+
         manager.StartClient();
         OnClientAuthenticate();
     }
@@ -137,6 +138,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public override void OnServerAuthenticate(NetworkConnectionToClient conn)
     {
         // wait for LoginMsg from client
+
     }
 
     // virtual in case someone wants to modify
@@ -180,7 +182,6 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     // {
 
     // }
-
     Dictionary<string, NetworkConnectionToClient> ticketToConn = new Dictionary<string, NetworkConnectionToClient>();
 
     void OnAuthenticateSessionTicket(AuthenticateSessionTicketResult result) {
@@ -198,7 +199,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // authenticate on server
         OnServerAuthenticated.Invoke(conn);
     }
-    
+
     void OnServerLogin(NetworkConnectionToClient conn, LoginMsg message)
     {
         print("=======================NetworkConnectionToClient==========================");
@@ -208,8 +209,9 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             // allowed account name?
             if (IsAllowedAccountName(message.account))
             {
-               
-                if (Database.singleton.TryLogin(message.account, "message.password"))
+
+                // validate account info
+                if (Database.singleton.TryLogin(message.account, "message.password")) // Always true because we are using playfab to check the passwords. --JRR
                 {
                     // not in lobby and not in world yet?
                     if (!AccountLoggedIn(message.account))
@@ -225,6 +227,12 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         ticketToConn[message.playFabId] = conn;
 
                         PlayFabServerAPI.AuthenticateSessionTicket(request, OnAuthenticateSessionTicket, OnError , conn);
+
+                        // login successful
+                        //Debug.Log("login successful: " + message.account);
+
+                        //Debug.Log("result.IsSessionTicketExpired: " + result.IsSessionTicketExpired);
+                        
 
                         // login successful
                         //Debug.Log("login successful: " + message.account);

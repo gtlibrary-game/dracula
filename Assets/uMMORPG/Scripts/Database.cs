@@ -61,11 +61,25 @@ using System.IO;
 using System.Collections.Generic;
 using SQLite; // from https://github.com/praeclarum/sqlite-net
 using UnityEngine.Events;
+using System.Net;
+using System.Text;
+using System.Threading;
+
+        
+public struct CharacterStats {
+    public string name;
+    public string classname;
+    public int level;
+    public long experience;
+    public long skillExperience;
+    public long heroid;
+}
 
 public partial class Database : MonoBehaviour
 {
     // singleton for easier access
     public static Database singleton;
+
 
     // file name
     public string databaseFile = "Database.sqlite";
@@ -84,6 +98,7 @@ public partial class Database : MonoBehaviour
         public DateTime created { get; set; }
         public DateTime lastlogin { get; set; }
         public bool banned { get; set; }
+        public string importKey {get; set; }
     }
     class characters
     {
@@ -112,6 +127,7 @@ public partial class Database : MonoBehaviour
         public bool online { get; set; }
         public DateTime lastsaved { get; set; }
         public bool deleted { get; set; }
+        public long heroid {get; set; }    // This is the id of the token from the hero contract.
     }
     class character_inventory
     {
@@ -253,8 +269,120 @@ public partial class Database : MonoBehaviour
         // addon system hooks
         onConnected.Invoke();
 
-        //Debug.Log("connected to database");
+        Debug.Log("connected to database");
+
+        Web2Start(); // FIXME: need to wrap with WEB2 DEFINES to split the load to the api server. 
+                     // FIXME: need to migrate to postgres database. --JRR
     }
+
+	private HttpListener listener;
+	private Thread listenerThread;
+
+    void Web2Start() {
+		listener = new HttpListener ();
+		listener.Prefixes.Add ("http://localhost:4444/");
+		listener.Prefixes.Add ("http://127.0.0.1:4444/");
+		listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
+		listener.Start ();
+
+		listenerThread = new Thread (startListener);
+		listenerThread.Start ();
+		Debug.Log ("Web2 Server Started");
+    }
+
+    private void startListener ()
+	{
+		while (true) {               
+
+			var result = listener.BeginGetContext (ListenerCallback, listener);
+			result.AsyncWaitHandle.WaitOne ();
+		}
+	}
+
+	private void ListenerCallback (IAsyncResult result)
+	{				
+		var context = listener.EndGetContext (result);		
+
+		Debug.Log ("Method: " + context.Request.HttpMethod);
+		Debug.Log ("LocalUrl: " + context.Request.Url.LocalPath);
+
+		if (context.Request.QueryString.AllKeys.Length > 0)
+			foreach (var key in context.Request.QueryString.AllKeys) {  // SendResponse() closes the stream. FIXME. Only one request type at a time is allowed. Fail gracefully...??? --JRR
+                string value = context.Request.QueryString.GetValues (key) [0];
+				Debug.Log ("Key: " + key + ", Value: " + value);
+                if (key == "name") {    // Handle all the requests right here for ease.
+                    CharacterStats stats = GetCharacterStats(value);
+                    string json = JsonUtility.ToJson(stats);
+                    SendResponse(context, json);
+                    break;
+                }
+                if(key=="heroid") {
+                    // ... GetCharacterStatsByHeroId();
+                }
+                if(key=="itemid") {
+                    // ... GetItemStatsById();
+                }
+                if(key=="lootid") {
+                    // ... GetLootById();
+                }
+			}
+
+		if (context.Request.HttpMethod == "POST") {	
+			Thread.Sleep (1000);
+			var data_text = new StreamReader (context.Request.InputStream, 
+				                context.Request.ContentEncoding).ReadToEnd ();
+			Debug.Log (data_text);
+		} 
+	}
+    public CharacterStats GetCharacterStats(string characterName) {
+        foreach (characters character in connection.Query<characters>("SELECT * FROM characters WHERE name=? AND deleted=0", characterName))
+            return new CharacterStats{
+                name = character.name,
+                classname = character.classname,
+                level = character.level,
+                experience = character.experience,
+                skillExperience = character.skillExperience,
+                heroid = character.heroid,
+            };
+        return new CharacterStats{};
+    }
+
+    private static void ProcessRequest(HttpListenerContext context)
+    {
+        string characterName = context.Request.QueryString["name"];
+
+        if (string.IsNullOrEmpty(characterName))
+        {
+            SendError(context, "Character name not specified");
+            return;
+        }
+
+        CharacterStats stats = singleton.GetCharacterStats(characterName);
+
+        if (stats.name == null)
+        {
+            SendError(context, "Character not found");
+            return;
+        }
+
+        string json = JsonUtility.ToJson(stats);
+        SendResponse(context, json);
+    }
+
+    private static void SendResponse(HttpListenerContext context, string message)
+    {
+        byte[] buffer = Encoding.UTF8.GetBytes(message);
+        context.Response.ContentLength64 = buffer.Length;
+        context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+        context.Response.OutputStream.Close();
+    }
+
+    private static void SendError(HttpListenerContext context, string message)
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        SendResponse(context, message);
+    }
+
 
     // close connection when Unity closes to prevent locking
     void OnApplicationQuit()
@@ -335,18 +463,6 @@ public partial class Database : MonoBehaviour
             }
         }
         return false;
-    }
-
-    public bool TryRegister(string account, string password)
-    {
-         if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=?", account) == null)
-         {      connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
-                return true;
-         }
-         else{
-            return false;
-         }
-
     }
 
     // character data //////////////////////////////////////////////////////////
