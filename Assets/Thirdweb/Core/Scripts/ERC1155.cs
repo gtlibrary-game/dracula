@@ -92,7 +92,6 @@ namespace Thirdweb
                     start = 0;
                     end = totalCount - 1;
                 }
-                // TODO: Add Multicall
                 List<NFT> allNfts = new List<NFT>();
                 for (int i = start; i <= end; i++)
                     allNfts.Add(await Get(i.ToString()));
@@ -113,12 +112,11 @@ namespace Thirdweb
             else
             {
                 string owner = address == null ? await ThirdwebManager.Instance.SDK.wallet.GetAddress() : address;
-                // TODO: Add Multicall
                 int totalCount = await TotalCount();
                 List<NFT> ownedNfts = new List<NFT>();
                 for (int i = 0; i < totalCount; i++)
                 {
-                    BigInteger ownedBalance = BigInteger.Parse(await Balance(i.ToString()));
+                    BigInteger ownedBalance = BigInteger.Parse(await BalanceOf(owner, i.ToString()));
                     if (ownedBalance == 0)
                     {
                         continue;

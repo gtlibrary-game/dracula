@@ -25,7 +25,6 @@ public partial class UILogin : MonoBehaviour
     public Button quitButton;
     public Button resetPasswordButton;
 
-
     public TextMeshProUGUI userNameInput;
     public TextMeshProUGUI userPassInput;
     void Start()

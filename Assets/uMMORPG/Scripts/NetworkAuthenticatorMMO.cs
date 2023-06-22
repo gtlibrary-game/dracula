@@ -6,7 +6,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using PlayFab.ServerModels;
 using System.Collections.Generic;
-//using Thirdweb;
+using TMPro;
 
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
@@ -26,9 +26,50 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string sessionTicket;
 
 
-    public void SignAndSendTicket() {
-        //const string signature = await ThirdwebManager.Instance.SDK.Sign(sessionTicket);
+    public void SendSignedTicket(string signature) {
 
+        //ThirdwebManager.IsConnectedWallet();
+
+        var message = new SignTicketMsg {
+            signature = signature,
+            playFabId = playFabId,
+        };
+        NetworkClient.connection.Send(message);
+    }
+    
+    Dictionary<string, string> playFabToAccount = new Dictionary<string, string>();
+    void OnSignSessionTicket(AuthenticateSessionTicketResult result) {
+        Debug.Log("Playfab authenticated...");
+
+        NetworkConnectionToClient conn = ticketToConn[result.UserInfo.PlayFabId];
+
+        // login successful
+        Debug.Log("Signing ticket was successful so far...: " + result.UserInfo.PlayFabId);
+
+        // notify client about successful login. otherwise it
+        // won't accept any further messages.
+        conn.Send(new SignTicketSuccessMsg());
+
+        // Need to save the acccount address in the connection
+        string account = playFabToAccount[result.UserInfo.PlayFabId];
+        //conn.account = account; // FIXME: need to turn this part on
+
+        // authenticate on server
+        //OnServerAuthenticated.Invoke(conn);
+    }
+
+    public void OnSignedTicket(NetworkConnectionToClient conn, SignTicketMsg message) {
+        Debug.LogWarning("Ticket was signed:" + message);
+
+        // Need to check if the playFab sessionTicket matches the account
+        var request = new AuthenticateSessionTicketRequest {
+            SessionTicket = message.sessionTicket
+        };
+                        
+        ticketToConn[message.playFabId] = conn;         //FIXME
+        playFabToAccount[message.playFabId] = "0xAcc"; // ThirdWeb... await sdk.wallet.RecoverAddress(message.sessionTicket, message.signature);
+
+        PlayFabServerAPI.AuthenticateSessionTicket(request, OnSignSessionTicket, OnError , conn);
     }
 
     public void RegisterEmail() {
@@ -139,9 +180,11 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     {
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
+        NetworkServer.RegisterHandler<SignTicketMsg>(OnSignedTicket, false);
         //NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
         // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
     }
+
 
     public override void OnServerAuthenticate(NetworkConnectionToClient conn)
     {

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4453112, g: 0.49495482, b: 0.5739472, a: 1}
+  m_IndirectSpecularColor: {r: 0.4453119, g: 0.49495554, b: 0.5739477, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -10396,9 +10396,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c09ac9174a1f1bc4696000aea9b15ca1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 159557691}
-  networkManagerObj: {fileID: 987002996}
-  characterName: {fileID: 2011846653}
 --- !u!1 &162636137
 GameObject:
   m_ObjectHideFlags: 0
@@ -107873,6 +107870,7 @@ GameObject:
   - component: {fileID: 1805048811}
   - component: {fileID: 1805048812}
   - component: {fileID: 1805048813}
+  - component: {fileID: 1805048814}
   m_Layer: 5
   m_Name: NFTsManagement
   m_TagString: Untagged
@@ -107940,6 +107938,31 @@ MonoBehaviour:
   LoginButton: {fileID: 5930045933221111024}
   RegisterButton: {fileID: 1449114778}
   ConnectWalletButton: {fileID: 2006486022}
+--- !u!114 &1805048814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1805048810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23cda8275ba99496992e4fb49894b210, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnServerAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  manager: {fileID: 0}
+  loginAccount: 
+  loginPassword: 
+  passwordSalt: at_least_16_byte
+  accountMaxLength: 256
+  playFabId: 
+  sessionTicket: 
 --- !u!1 &1805466309
 GameObject:
   m_ObjectHideFlags: 0

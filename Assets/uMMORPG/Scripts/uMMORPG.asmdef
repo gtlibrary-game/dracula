@@ -9,7 +9,8 @@
         "Mirror.Components",
         "Apathy",
         "Controller2k",
-        "PlayFab"
+        "PlayFab",
+        ""
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

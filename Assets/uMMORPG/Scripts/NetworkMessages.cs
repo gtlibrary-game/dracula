@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 
+public partial struct SignTicketMsg : NetworkMessage
+{
+    public string signature;        // The message is the session ticket
+
+    public string playFabId;
+    public string sessionTicket;
+}
+public partial struct SignTicketSuccessMsg : NetworkMessage
+{
+
+}
+
 // client to server ////////////////////////////////////////////////////////////
 public partial struct LoginMsg : NetworkMessage
 {

@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using WalletConnectSharp.Core.Models;
+using System.Numerics;
 
 [Serializable]
 public struct WalletButton
@@ -72,6 +73,11 @@ public class Prefab_ConnectWallet : MonoBehaviour
     WalletProvider _wallet;
     bool connecting;
     WCSessionData wcSessionData;
+
+    public string Address
+    {
+        get { return address; }
+    }
 
     // UI Initialization
 
@@ -142,7 +148,7 @@ public class Prefab_ConnectWallet : MonoBehaviour
     public void OpenPasswordPanel()
     {
         passwordPanel.SetActive(true);
-        // passwordButton.GetComponentInChildren<TMP_Text>().text = Utils.HasStoredAccount() ? "Unlock" : "Create wallet";
+        passwordButton.GetComponentInChildren<TMP_Text>().text = Utils.HasStoredAccount() ? "Unlock" : "Create wallet";
         passwordButton.onClick.RemoveAllListeners();
         passwordButton.onClick.AddListener(() => OnConnect(WalletProvider.LocalWallet, passwordInputField.text));
     }
@@ -155,14 +161,14 @@ public class Prefab_ConnectWallet : MonoBehaviour
     }
 
     // Connecting
-    public void WalletConnect(){
-        OnConnect(supportedWallets[0]);
-    }
+
     public async void OnConnect(WalletProvider wallet, string password = null, string email = "joe@biden.com", WalletProvider personalWallet = WalletProvider.LocalWallet)
     {
         try
         {
-            address = await ThirdwebManager.Instance.SDK.wallet.Connect(new WalletConnection(wallet, ThirdwebManager.Instance.GetCurrentChainID(), password, email, personalWallet));
+            ChainData currentChain = ThirdwebManager.Instance.supportedChains.Find(x => x.identifier == ThirdwebManager.Instance.chain);
+
+            address = await ThirdwebManager.Instance.SDK.wallet.Connect(new WalletConnection(wallet, BigInteger.Parse(currentChain.chainId), password, email, personalWallet));
 
             if (wallet == WalletProvider.LocalWallet || (wallet == WalletProvider.SmartWallet && personalWallet == WalletProvider.LocalWallet))
             {
@@ -198,9 +204,9 @@ public class Prefab_ConnectWallet : MonoBehaviour
             CurrencyValue nativeBalance = await ThirdwebManager.Instance.SDK.wallet.GetBalance();
             balanceText.text = $"{nativeBalance.value.ToEth()} {nativeBalance.symbol}";
             balanceText2.text = balanceText.text;
-            // walletAddressText.text = await Utils.GetENSName(address) ?? address.ShortenAddress();
+            walletAddressText.text = await Utils.GetENSName(address) ?? address.ShortenAddress();
             walletAddressText2.text = walletAddressText.text;
-            currentNetworkText.text = ThirdwebManager.Instance.GetCurrentChainIdentifier();
+            currentNetworkText.text = ThirdwebManager.Instance.chain;
             currentNetworkImage.sprite = networkSprites.Find(x => x.chain == _chain).sprite;
             connectButton.SetActive(false);
             connectedButton.SetActive(true);
@@ -213,7 +219,7 @@ public class Prefab_ConnectWallet : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"Error Fetching Native Balance: {e.Message}");
+            Debug.LogWarning($"Error Fetching Native Balance: {e}");
         }
     }
 
@@ -224,7 +230,8 @@ public class Prefab_ConnectWallet : MonoBehaviour
         try
         {
             ThirdwebManager.Instance.chain = _chain;
-            await ThirdwebManager.Instance.SDK.wallet.SwitchNetwork(int.Parse(ThirdwebManager.Instance.GetCurrentChainData().chainId));
+            ChainData currentChain = ThirdwebManager.Instance.supportedChains.Find(x => x.identifier == ThirdwebManager.Instance.chain);
+            await ThirdwebManager.Instance.SDK.wallet.SwitchNetwork(int.Parse(currentChain.chainId));
             OnConnected();
             OnSwitchNetworkCallback?.Invoke();
             Debug.Log($"Switched Network Successfully: {_chain}");

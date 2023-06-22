@@ -8,7 +8,6 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using Thirdweb.Contracts.Forwarder.ContractDefinition;
 using Nethereum.RPC.Eth.Transactions;
-using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 
 namespace Thirdweb
@@ -58,16 +57,24 @@ namespace Thirdweb
             }
             else
             {
-                var gasEstimator = new Web3(ThirdwebManager.Instance.SDK.session.RPC).Eth.GetContractTransactionHandler<TWFunction>();
-                var gas = await gasEstimator.EstimateGasAsync(contractAddress, functionMessage);
-                functionMessage.Gas = gas.Value < 100000 ? 100000 : gas.Value;
+                try
+                {
+                    var gasEstimator = new Web3(ThirdwebManager.Instance.SDK.session.RPC).Eth.GetContractTransactionHandler<TWFunction>();
+                    var gas = await gasEstimator.EstimateGasAsync(contractAddress, functionMessage);
+                    functionMessage.Gas = gas.Value < 100000 ? 100000 : gas.Value;
+                }
+                catch (System.InvalidOperationException e)
+                {
+                    Debug.LogWarning($"Failed to estimate gas for transaction, proceeding with 100k gas: {e}");
+                    functionMessage.Gas = 100000;
+                }
             }
 
             bool isGasless = ThirdwebManager.Instance.SDK.session.Options.gasless.HasValue && ThirdwebManager.Instance.SDK.session.Options.gasless.Value.openzeppelin.HasValue;
 
             if (!isGasless)
             {
-                if (ThirdwebManager.Instance.SDK.session.WalletProvider == WalletProvider.LocalWallet)
+                if (ThirdwebManager.Instance.SDK.session.ActiveWallet.GetProvider() == WalletProvider.LocalWallet)
                 {
                     var transactionHandler = ThirdwebManager.Instance.SDK.session.Web3.Eth.GetContractTransactionHandler<TWFunction>();
                     txHash = await transactionHandler.SendRequestAsync(contractAddress, functionMessage);
@@ -123,9 +130,14 @@ namespace Thirdweb
                     else
                     {
                         var response = JsonConvert.DeserializeObject<RelayerResponse>(req.downloadHandler.text);
+                        if (response.status != "success")
+                        {
+                            throw new UnityException(
+                                $"Forward Request Failed!\nError: {req.downloadHandler.text}\nRelayer URL: {relayerUrl}\nRelayer Forwarder Address: {forwarderAddress}\nRequest: {request}\nSignature: {signature}\nPost Data: {postData}"
+                            );
+                        }
                         var result = JsonConvert.DeserializeObject<RelayerResult>(response.result);
                         txHash = result.txHash;
-                        Debug.Log(txHash);
                     }
                 }
             }
@@ -133,43 +145,46 @@ namespace Thirdweb
             var receiptPoller = new Web3(ThirdwebManager.Instance.SDK.session.RPC);
             return await receiptPoller.TransactionReceiptPolling.PollForReceiptAsync(txHash);
         }
+    }
 
-        [System.Serializable]
-        public struct RelayerResponse
+    [System.Serializable]
+    public struct RelayerResponse
+    {
+        [JsonProperty("status")]
+        public string status;
+
+        [JsonProperty("result")]
+        public string result;
+    }
+
+    [System.Serializable]
+    public struct RelayerResult
+    {
+        [JsonProperty("txHash")]
+        public string txHash;
+    }
+
+    [System.Serializable]
+    public struct RelayerRequest
+    {
+        [JsonProperty("request")]
+        public MinimalForwarder.ForwardRequest request;
+
+        [JsonProperty("signature")]
+        public string signature;
+
+        [JsonProperty("forwarderAddress")]
+        public string forwarderAddress;
+
+        [JsonProperty("type")]
+        public string type;
+
+        public RelayerRequest(ForwardRequest request, string signature, string forwarderAddress)
         {
-            [JsonProperty("result")]
-            public string result;
-        }
-
-        [System.Serializable]
-        public struct RelayerResult
-        {
-            [JsonProperty("txHash")]
-            public string txHash;
-        }
-
-        [System.Serializable]
-        public struct RelayerRequest
-        {
-            [JsonProperty("request")]
-            public MinimalForwarder.ForwardRequest request;
-
-            [JsonProperty("signature")]
-            public string signature;
-
-            [JsonProperty("forwarderAddress")]
-            public string forwarderAddress;
-
-            [JsonProperty("type")]
-            public string type;
-
-            public RelayerRequest(ForwardRequest request, string signature, string forwarderAddress)
-            {
-                this.request = request;
-                this.signature = signature;
-                this.forwarderAddress = forwarderAddress;
-                this.type = "forward";
-            }
+            this.request = request;
+            this.signature = signature;
+            this.forwarderAddress = forwarderAddress;
+            this.type = "forward";
         }
     }
 }

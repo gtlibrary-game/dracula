@@ -27,6 +27,9 @@ public class NFTManager : MonoBehaviour
     public GameObject LoginButton;
     public GameObject RegisterButton;
     public GameObject ConnectWalletButton;
+
+    public ThirdwebSDK sdk;
+
     Dictionary<string, int> classValues = new Dictionary<string, int>
     {
         {"Warrior", 15},
@@ -36,9 +39,10 @@ public class NFTManager : MonoBehaviour
         // {"MageUnit", 135}
     };
 
+
     void Start()
     {
-       
+       sdk = new ThirdwebSDK("avalanche-fuji");
     }
     void Update(){
         return;
@@ -51,6 +55,15 @@ public class NFTManager : MonoBehaviour
             RegisterButton.SetActive(false);
         }
     }
+
+/*
+    public async void SignAndSendTicket() {
+        string msg = auth.sessionTicket;
+        string signature = await sdk.wallet.Sign(msg);
+        auth.SendSignedTicket(signature);
+    }
+    */
+
     public async void IsConnectedWallet(){
         var data = await ThirdwebManager.Instance.SDK.wallet.IsConnected();
         if(data){
@@ -74,6 +87,7 @@ public class NFTManager : MonoBehaviour
         walletFlg = true;
         
     }
+
     public async void getHeroNFT()
     {
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
