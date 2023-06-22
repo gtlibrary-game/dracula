@@ -6,7 +6,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using PlayFab.ServerModels;
 using System.Collections.Generic;
-using Thirdweb;
+//using Thirdweb;
 
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
@@ -27,7 +27,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
 
     public void SignAndSendTicket() {
-        const string signature = await ThirdwebManager.Instance.SDK.Sign(sessionTicket);
+        //const string signature = await ThirdwebManager.Instance.SDK.Sign(sessionTicket);
 
     }
 
@@ -81,7 +81,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
 
     // client //////////////////////////////////////////////////////////////////
-    public override void tnStartClient()
+    public override void OnStartClient()
     {
         // register login success message, allowed before authenticated
         NetworkClient.RegisterHandler<LoginSuccessMsg>(OnClientLoginSuccess, false);
