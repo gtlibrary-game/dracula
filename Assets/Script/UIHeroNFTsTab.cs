@@ -28,25 +28,26 @@ public class UIHeroNFTsTab : MonoBehaviour
         createHeroButton.onClick.RemoveAllListeners();
         createHeroButton.onClick.AddListener(async () =>
         {
+            var message = new CharacterCreateMsg
+            {
+                name = nameInput.text,
+                classIndex = characterDropDown.value,
+                // heroTokenId = newTokenId,
+                gameMaster = false
+            };
+            NetworkClient.Send(message);
             print("===============createHeroButton=============");
-            NFTManager nFTManagerCS = nftManager.GetComponent<NFTManager>();
-            string currentOptionText = characterDropDown.options[characterDropDown.value].text;
-            await nFTManagerCS.heroMint(currentOptionText);
-            try
-            {
-                var message = new CharacterCreateMsg
-                {
-                    name = nameInput.text,
-                    classIndex = characterDropDown.value,
-                    // heroTokenId = newTokenId,
-                    gameMaster = false
-                };
-                NetworkClient.Send(message);
-            }
-            catch (Exception ex)
-            {
-                // Handle the error here
-            }
+            // NFTManager nFTManagerCS = nftManager.GetComponent<NFTManager>();
+            // string currentOptionText = characterDropDown.options[characterDropDown.value].text;
+            // await nFTManagerCS.heroMint(currentOptionText);
+            // try
+            // {
+                
+            // }
+            // catch (Exception ex)
+            // {
+            //     // Handle the error here
+            // }
         });
     }
 
