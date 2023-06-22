@@ -4,6 +4,8 @@ using UnityEngine;
 using Mirror;
 using PlayFab;
 using PlayFab.ClientModels;
+using PlayFab.ServerModels;
+using System.Collections.Generic;
 
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
@@ -39,6 +41,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     }
     void OnError(PlayFabError error) {
         Debug.LogWarning(error);
+        manager.uiPopup.Show("" + error);
     }
 
     public void LoginUser() {
@@ -50,12 +53,13 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
     }
     public void OnLoginSuccess(LoginResult result) {
-        string playFabId = result.PlayFabId;
-        string sessionTicket = result.SessionTicket;
+        playFabId = result.PlayFabId;
+        sessionTicket = result.SessionTicket;
 
         Debug.Log("Logged in with PlayFab ID: " + playFabId);
         Debug.Log("Session ticket: " + sessionTicket);
         manager.StartClient();
+        OnClientAuthenticate();
     }
     public void ResetPassword() {
         var request = new SendAccountRecoveryEmailRequest {
@@ -74,8 +78,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     {
         // register login success message, allowed before authenticated
         NetworkClient.RegisterHandler<LoginSuccessMsg>(OnClientLoginSuccess, false);
-        NetworkClient.RegisterHandler<LoginWrongUser>(OnLoginWrongUserResult, false);
-        NetworkClient.RegisterHandler<RegisterSuccessMsg>(OnRegisterResult, false);
+        //NetworkClient.RegisterHandler<LoginWrongUser>(OnLoginWrongUserResult, false);
+        //NetworkClient.RegisterHandler<RegisterSuccessMsg>(OnRegisterResult, false);
     }
 
     public override void OnClientAuthenticate()
@@ -91,7 +95,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // Application.version can be modified under:
         // Edit -> Project Settings -> Player -> Bundle Version
         string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
-        LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version};
+        LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version, playFabId=playFabId, sessionTicket=sessionTicket};
         NetworkClient.connection.Send(message);
         Debug.Log("login message was sent");
 
@@ -126,7 +130,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     {
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
-        NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
+        //NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
         // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
     }
 
@@ -155,6 +159,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     void OnServerRegister(NetworkConnectionToClient conn, RegisterMsg message)
     {
+        /*
         if (message.version == Application.version)
         {
             // allowed account name?
@@ -169,11 +174,30 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                 }
             }
         }
+        */
     }
     // void OnServerResetPassword(NetworkConnectionToClient conn, ResetPasswordMsg message)
     // {
 
     // }
+
+    Dictionary<string, NetworkConnectionToClient> ticketToConn = new Dictionary<string, NetworkConnectionToClient>();
+
+    void OnAuthenticateSessionTicket(AuthenticateSessionTicketResult result) {
+        Debug.Log("Playfab authenticated...");
+
+        NetworkConnectionToClient conn = ticketToConn[result.UserInfo.PlayFabId];
+
+        // login successful
+        Debug.Log("login successful: " + result.UserInfo.PlayFabId);
+
+        // notify client about successful login. otherwise it
+        // won't accept any further messages.
+        conn.Send(new LoginSuccessMsg());
+
+        // authenticate on server
+        OnServerAuthenticated.Invoke(conn);
+    }
     
     void OnServerLogin(NetworkConnectionToClient conn, LoginMsg message)
     {
@@ -185,7 +209,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             if (IsAllowedAccountName(message.account))
             {
                
-                if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.Success)
+                if (Database.singleton.TryLogin(message.account, "message.password"))
                 {
                     // not in lobby and not in world yet?
                     if (!AccountLoggedIn(message.account))
@@ -193,15 +217,24 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         // add to logged in accounts
                         manager.lobby[conn] = message.account;
 
+                        // Need to check if the playFab sessionTicket matches the account
+                        var request = new AuthenticateSessionTicketRequest {
+            	            SessionTicket = message.sessionTicket
+        	            };
+                        
+                        ticketToConn[message.playFabId] = conn;
+
+                        PlayFabServerAPI.AuthenticateSessionTicket(request, OnAuthenticateSessionTicket, OnError , conn);
+
                         // login successful
-                        Debug.Log("login successful: " + message.account);
+                        //Debug.Log("login successful: " + message.account);
 
                         // notify client about successful login. otherwise it
                         // won't accept any further messages.
-                        conn.Send(new LoginSuccessMsg());
+                        //conn.Send(new LoginSuccessMsg());
 
                         // authenticate on server
-                        OnServerAuthenticated.Invoke(conn);
+                        //OnServerAuthenticated.Invoke(conn);
                     }
                     else
                     {
@@ -213,18 +246,6 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         // because then the error message would never be sent.
                         //conn.Disconnect();
                     }
-                }
-                else if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.WrongPassword)
-                {
-                    Debug.Log("invalid password for: " + message.account);
-                    // manager.ServerSendError(conn, "Please register new account", true);
-                    conn.Send(new LoginWrongUser{ msg = "invalid password for: " + message.account});
-                }
-                else if (Database.singleton.TryLogin(message.account, message.password)==Database.LoginEnum.NotRegistered)
-                {
-                    Debug.Log("invalid account for: " + message.account);
-                    // manager.ServerSendError(conn, "Please register new account", true);
-                    conn.Send(new LoginWrongUser{ msg = "You are not registered. Please register. " + message.account});
                 }
             }
             else

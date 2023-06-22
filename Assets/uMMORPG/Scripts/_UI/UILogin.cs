@@ -36,15 +36,16 @@ public partial class UILogin : MonoBehaviour
             string last = PlayerPrefs.GetString("LastServer", "");
             serverDropdown.value = manager.serverList.FindIndex(s => s.name == last);
         }
-        Invoke("ConnectServer", 2f);
+        //Invoke("ConnectServer", 2f);
     }
+    /* Dont start server until login
     void ConnectServer()
     {
         if (manager.state == NetworkState.Offline || manager.state == NetworkState.Handshake)
         {
             manager.StartClient();
         }
-    }
+    }*/
     void OnDestroy()
     {
         // save last server by name in case order changes some day
@@ -78,10 +79,11 @@ public partial class UILogin : MonoBehaviour
 
             resetPasswordButton.interactable = manager.isNetworkActive;
             resetPasswordButton.onClick.SetListener(() => { auth.ResetPassword(); });
-            loginButton.interactable = manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
+            loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
             loginButton.onClick.SetListener(() => {
-                auth.OnClientAuthenticate();
+                auth.LoginUser();
+                //auth.OnClientAuthenticate();
             });
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
