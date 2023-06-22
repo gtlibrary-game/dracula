@@ -6,6 +6,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using PlayFab.ServerModels;
 using System.Collections.Generic;
+//using Thirdweb;
 
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
@@ -24,6 +25,12 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string playFabId;
     public string sessionTicket;
 
+
+    public void SignAndSendTicket() {
+        //const string signature = await ThirdwebManager.Instance.SDK.Sign(sessionTicket);
+
+    }
+
     public void RegisterEmail() {
         var request = new RegisterPlayFabUserRequest {
             Email = loginAccount,
@@ -31,7 +38,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             RequireBothUsernameAndEmail = false
         }; 
         
-        // PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
         Debug.Log("In register");
     }
     //void OnRegisterSuccess(RegisterPlayFabUserResult result) {
@@ -119,11 +126,13 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     }
     public void OnClientRegister()
     {
+        /*
         string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
-        RegisterMsg message = new RegisterMsg{account=loginAccount, password=hash, version=Application.version};
+        RegisterMsg message = new RegisterMsg{account=loginAccount, password=hash, version=Application.version, playFabId=playFabId, sessionTicket=sessionTicket};
         NetworkClient.connection.Send(message);
         Debug.Log("Register message was sent");
         manager.state = NetworkState.Handshake;
+        */
     }
     
     // server //////////////////////////////////////////////////////////////////
