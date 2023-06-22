@@ -118,11 +118,13 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     }
     public void OnClientRegister()
     {
+        /*
         string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
         RegisterMsg message = new RegisterMsg{account=loginAccount, password=hash, version=Application.version, playFabId=playFabId, sessionTicket=sessionTicket};
         NetworkClient.connection.Send(message);
         Debug.Log("Register message was sent");
         manager.state = NetworkState.Handshake;
+        */
     }
     
     // server //////////////////////////////////////////////////////////////////
