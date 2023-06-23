@@ -22,8 +22,7 @@ public class UIHeroNFTsTab : MonoBehaviour
     void OnEnable(){
 
         // nftManager.GetComponent<NFTManager>().getBookmarkByWallet();
-        
-        nftManager.GetComponent<NFTManager>().IsConnectedWallet();
+        // nftManager.GetComponent<NFTManager>().IsConnectedWallet();
         handleCharacterDropdown();
         createHeroButton.onClick.RemoveAllListeners();
         createHeroButton.onClick.AddListener(async () =>
