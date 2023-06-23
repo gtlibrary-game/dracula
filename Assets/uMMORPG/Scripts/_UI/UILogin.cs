@@ -73,9 +73,9 @@ public partial class UILogin : MonoBehaviour
 
             // buttons. interactable while network is not active
             // (using IsConnecting is slightly delayed and would allow multiple clicks)
-            registerButton.interactable = manager.isNetworkActive;
+            registerButton.interactable = !manager.isNetworkActive;
             registerButton.onClick.SetListener(() => { 
-                auth.OnClientRegister();
+                auth.RegisterEmail();
              });
 
             resetPasswordButton.interactable = manager.isNetworkActive;

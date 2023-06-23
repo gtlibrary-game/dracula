@@ -116,6 +116,10 @@ public class NFTManager : MonoBehaviour
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
         await contract.ERC721.Burn(i);
     }
+
+    public async void OnSignAndSendTicket(){
+        print("OnSignAndSendTicket");
+    }
     public async void getAllNFTs()
     {
         // progressText.text = "Listing NFTs, please wait...";

@@ -6,8 +6,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using PlayFab.ServerModels;
 using System.Collections.Generic;
-//using Thirdweb;
-
+using Thirdweb;
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
     [Header("Components")]
@@ -26,9 +25,10 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string sessionTicket;
 
 
-    public void SignAndSendTicket() {
-        //const string signature = await ThirdwebManager.Instance.SDK.Sign(sessionTicket);
-
+    public async void SignAndSendTicket() {
+       string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+       print(walletAddress);
+        // SendMessage("OnSignAndSendTicket");
     }
 
     public void RegisterEmail() {
@@ -113,6 +113,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     void OnClientLoginSuccess(LoginSuccessMsg msg)
     {
+        SignAndSendTicket();
         // authenticated successfully. OnClientConnected will be called.
         OnClientAuthenticated.Invoke();
     }
