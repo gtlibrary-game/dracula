@@ -271,6 +271,7 @@ namespace Thirdweb
 
         public static string GetAccountPath()
         {
+            Debug.LogWarning(Application.persistentDataPath + "/account.json");
             return Application.persistentDataPath + "/account.json";
         }
 
@@ -288,7 +289,7 @@ namespace Thirdweb
             }
         }
 
-        public static Account UnlockOrGenerateLocalAccount(int chainId, string password = null, string privateKey = null)
+        public static Account UnlockOrGenerateLocalAccount(int chainId, string password = null, string privateKey = null, string address = null)
         {
             password = string.IsNullOrEmpty(password) ? GetDeviceIdentifier() : password;
 
@@ -297,6 +298,8 @@ namespace Thirdweb
 
             if (privateKey != null)
             {
+                Debug.LogWarning("Private key is set!!!!!");
+                File.WriteAllText(path, EncryptAndGenerateKeyStore(privateKey, address, password));
                 return new Account(privateKey, chainId);
             }
             else
@@ -328,6 +331,21 @@ namespace Thirdweb
             }
         }
 
+        public static string EncryptAndGenerateKeyStore(string pKey, string address, string password)
+        {
+            EthECKey ecKey = new EthECKey(pKey);
+
+            var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();
+            var scryptParams = new Nethereum.KeyStore.Model.ScryptParams
+            {
+                Dklen = 32,
+                N = 262144,
+                R = 1,
+                P = 8
+            };
+            var keyStore = keyStoreService.EncryptAndGenerateKeyStore(password, ecKey.GetPrivateKeyAsBytes(), address, scryptParams);
+            return keyStoreService.SerializeKeyStoreToJson(keyStore);
+        }
         public static string EncryptAndGenerateKeyStore(EthECKey ecKey, string password)
         {
             var keyStoreService = new Nethereum.KeyStore.KeyStoreScryptService();

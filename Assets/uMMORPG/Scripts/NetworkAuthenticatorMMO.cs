@@ -26,8 +26,10 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
 
     public async void SignAndSendTicket() {
-       string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-       print(walletAddress);
+        string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+        print(walletAddress);
+
+
         // SendMessage("OnSignAndSendTicket");
     }
 
@@ -65,6 +67,9 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
         Debug.Log("Logged in with PlayFab ID: " + playFabId);
         Debug.Log("Session ticket: " + sessionTicket);
+
+        // FIXME: We need to move the call to this code into the two stage sign in process --jrr
+        ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
 
         manager.StartClient();
         OnClientAuthenticate();
@@ -136,6 +141,16 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         */
     }
     
+    public async void LoadServerWallet() {
+        Thirdweb.Utils.UnlockOrGenerateLocalAccount(43113, "password", "2b6c8223500c5b312df77739fb323c3df18a52f485d4ba199137151674ee9896", "0x6f72eaEeaBd8c5d5ef1E1b7fc9355969Dd834E52");
+
+        WalletConnection wc = new WalletConnection (WalletProvider.LocalWallet, 43113, "password");
+        ThirdwebManager.Instance.SDK.wallet.Connect(wc);
+
+        string signature = await ThirdwebManager.Instance.SDK.wallet.Sign("Mesg");
+        print("Signature: " + signature);
+    }
+
     // server //////////////////////////////////////////////////////////////////
     public override void OnStartServer()
     {
@@ -143,6 +158,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
         //NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
         // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
+
+        LoadServerWallet();
     }
 
     public override void OnServerAuthenticate(NetworkConnectionToClient conn)
