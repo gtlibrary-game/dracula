@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Mirror;
@@ -23,14 +24,21 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public int accountMaxLength = 256;
     public string playFabId;
     public string sessionTicket;
-
+    public string signedTicket;
 
     public async void SignAndSendTicket() {
         string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
         print(walletAddress);
-
-
-        // SendMessage("OnSignAndSendTicket");
+        
+        signedTicket = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+        
+        SignTicketMsg message = new SignTicketMsg {
+            account=loginAccount,
+            playFabId=playFabId,
+            sessionTicket=sessionTicket,
+            signedTicket=signedTicket,
+        };
+        NetworkClient.connection.Send(message);
     }
 
     public void RegisterEmail() {
@@ -68,11 +76,22 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         Debug.Log("Logged in with PlayFab ID: " + playFabId);
         Debug.Log("Session ticket: " + sessionTicket);
 
-        // FIXME: We need to move the call to this code into the two stage sign in process --jrr
-        ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+        // FIXME: We need to move these calls into the two-stage sign-in process --jrr
+        //var signedTicketTask = ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+        //signedTicketTask.Wait();
+        //signedTicket = signedTicketTask.Result;
+
+        //Debug.LogWarning("signedTicket: " + signedTicket);
 
         manager.StartClient();
         OnClientAuthenticate();
+    }
+    public void OnClientWalletConnect() {
+        if (null == sessionTicket) {
+            return; // We will try to sign the ticket when it is ready.
+        } else {
+            // FIXME:  Sign the sessionTicket and send SignedTicketMsg {} to the server.
+        }
     }
     public void ResetPassword() {
         var request = new SendAccountRecoveryEmailRequest {
@@ -108,7 +127,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // Application.version can be modified under:
         // Edit -> Project Settings -> Player -> Bundle Version
         string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
-        LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version, playFabId=playFabId, sessionTicket=sessionTicket};
+        LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version, playFabId=playFabId, sessionTicket=sessionTicket}; //, signedTicket=signedTicket};
         NetworkClient.connection.Send(message);
         Debug.Log("login message was sent");
 
@@ -142,13 +161,18 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     }
     
     public async void LoadServerWallet() {
-        Thirdweb.Utils.UnlockOrGenerateLocalAccount(43113, "password", "2b6c8223500c5b312df77739fb323c3df18a52f485d4ba199137151674ee9896", "0x6f72eaEeaBd8c5d5ef1E1b7fc9355969Dd834E52");
+        string walletAddress = "0x6f72eaEeaBd8c5d5ef1E1b7fc9355969Dd834E52";
+        Thirdweb.Utils.UnlockOrGenerateLocalAccount(43113, "password", "2b6c8223500c5b312df77739fb323c3df18a52f485d4ba199137151674ee9896", walletAddress);
 
         WalletConnection wc = new WalletConnection (WalletProvider.LocalWallet, 43113, "password");
         ThirdwebManager.Instance.SDK.wallet.Connect(wc);
 
         string signature = await ThirdwebManager.Instance.SDK.wallet.Sign("Mesg");
         print("Signature: " + signature);
+
+        // FIXME: Send the game owner wallet one loot of id 1 to verify the game contracts are working.
+        // ThirdwebManager.mintLoot(..walletddress...);
+
     }
 
     // server //////////////////////////////////////////////////////////////////
@@ -156,6 +180,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     {
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
+        NetworkServer.RegisterHandler<SignTicketMsg>(OnSignTicket, false);
         //NetworkServer.RegisterHandler<RegisterMsg>(OnServerRegister, false);
         // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
 
@@ -210,9 +235,44 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     // }
     Dictionary<string, NetworkConnectionToClient> ticketToConn = new Dictionary<string, NetworkConnectionToClient>();
+    Dictionary<string, string> playFabIdToTicket = new Dictionary<string, string>();
+    Dictionary<string, string> playFabIdToSigned = new Dictionary<string, string>();
+    Dictionary<string, string> playFabIdToAccount = new Dictionary<string, string>();
+
+    private async void SetWalletAddressFromSignedTicket(string playFabId, string account) {
+        string address = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(playFabIdToTicket[playFabId], playFabIdToSigned[playFabId]);
+        Debug.LogWarning("Setting the following address: " + address);
+        Debug.LogWarning("Account: " + account);
+
+        // FIXME: we should send back an all clear message saying that the account is linked.
+    }
+
+    void OnAuthenticateSignedTicket(AuthenticateSessionTicketResult result) {
+        NetworkConnectionToClient conn = ticketToConn[result.UserInfo.PlayFabId];
+
+        string account = playFabIdToAccount[result.UserInfo.PlayFabId];
+
+        SetWalletAddressFromSignedTicket(result.UserInfo.PlayFabId, account);
+    }
+
+    void OnSignTicket(NetworkConnectionToClient conn, SignTicketMsg message) {
+        Debug.Log("Signing playfab session ticket...");
+        ticketToConn[message.playFabId] = conn;
+        playFabIdToTicket[message.playFabId] = message.sessionTicket;
+        playFabIdToSigned[message.playFabId] = message.signedTicket;
+        playFabIdToAccount[message.playFabId] = message.account;
+
+        var request = new AuthenticateSessionTicketRequest {
+            SessionTicket = message.sessionTicket
+        };
+
+        PlayFabServerAPI.AuthenticateSessionTicket(request, OnAuthenticateSignedTicket, OnError , conn);
+    }
+
 
     void OnAuthenticateSessionTicket(AuthenticateSessionTicketResult result) {
         Debug.Log("Playfab authenticated...");
+
 
         NetworkConnectionToClient conn = ticketToConn[result.UserInfo.PlayFabId];
 
@@ -222,6 +282,12 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // notify client about successful login. otherwise it
         // won't accept any further messages.
         conn.Send(new LoginSuccessMsg());
+
+        // FIXME: Need to save the signedTicket's account address to the database associating it with the email address.
+        // FIXME: https://portal.thirdweb.com/unity/wallet/recoveraddress
+        // string address = ThirdwebManager...Get XXX
+
+        //string address = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(playFabIdToTicket[result.UserInfo.PlayFabId], playFabIdToSigned[result.UserInfo.PlayFabId]);
 
         // authenticate on server
         OnServerAuthenticated.Invoke(conn);
@@ -252,6 +318,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         	            };
                         
                         ticketToConn[message.playFabId] = conn;
+                        playFabIdToTicket[message.playFabId] = message.sessionTicket;
+                        //playFabIdToSigned[message.playFabId] = message.signedTicket;
 
                         PlayFabServerAPI.AuthenticateSessionTicket(request, OnAuthenticateSessionTicket, OnError , conn);
 

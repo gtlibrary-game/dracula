@@ -4,6 +4,14 @@ using System.Linq;
 using Mirror;
 
 // client to server ////////////////////////////////////////////////////////////
+public partial struct SignTicketMsg : NetworkMessage{
+    public string account;
+    public string version;
+
+    public string playFabId;
+    public string sessionTicket;
+    public string signedTicket;
+}
 public partial struct LoginMsg : NetworkMessage
 {
     public string account;
@@ -12,6 +20,7 @@ public partial struct LoginMsg : NetworkMessage
 
     public string playFabId;
     public string sessionTicket;
+    //public string signedTicket;
 }
 public partial struct RegisterMsg : NetworkMessage
 {
