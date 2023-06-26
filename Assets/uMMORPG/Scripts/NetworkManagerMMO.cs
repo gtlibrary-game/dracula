@@ -202,7 +202,7 @@ public partial class NetworkManagerMMO : NetworkManager
         onStartServer.Invoke();
     }
 
-    void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
+    async void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
     {
         print("============OnServerHeroMintNFT===============" + message.nowCharacterName);
 
@@ -210,14 +210,17 @@ public partial class NetworkManagerMMO : NetworkManager
         {
             CharacterStats nowCharacter = Database.singleton.GetCharacterStats(message.nowCharacterName);
 
-            if(!nowCharacter.name)
+            string walletAddress = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(auth.playFabIdToTicket[message.playFabId], auth.playFabIdToSigned[message.playFabId]);
+            string account = auth.playFabIdToAccount[message.playFabId];
+            Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
+            var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
+            print(resultMint);
+            // Database.singleton.HeroIdUpdate(message.nowCharacterName,Int.Parse(resultMint));
+            // conn.Send(new HeroMintNFTResultMsg{ heroId = resultMint });
+
+            if(nowCharacter.name != null)
             {
-                string walletAddress = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(auth.playFabIdToTicket[message.playFabId], auth.playFabIdToSigned[message.playFabId]);
-                string account = auth.playFabIdToAccount[message.playFabId];
-                CharacterStats nowCharacter = Database.singleton.GetCharacterStats(message.nowCharacterName);
-                Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
-                int resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
-                conn.Send(new HeroMintNFTResultMsg{ heroId = resultMint });
+                
             }
             
         }
@@ -358,7 +361,7 @@ public partial class NetworkManagerMMO : NetworkManager
     }
     void OnClientHeroMintNFT(HeroMintNFTResultMsg message)
     {
-        print("OnClientHeroMintNFT:"+message.msg);
+        print("OnClientHeroMintNFT:"+message.heroId);
     }
     void OnClientCharactersAvailable(CharactersAvailableMsg message)
     {
