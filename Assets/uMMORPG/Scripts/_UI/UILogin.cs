@@ -25,7 +25,7 @@ public partial class UILogin : MonoBehaviour
     public Button quitButton;
     public Button resetPasswordButton;
     public Button pasteButton;
-
+    public NFTManager nftManager;
 
     public TextMeshProUGUI userNameInput;
     public TextMeshProUGUI userPassInput;
@@ -82,7 +82,10 @@ public partial class UILogin : MonoBehaviour
             resetPasswordButton.onClick.SetListener(() => { auth.ResetPassword(); });
             loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
+            loginButton.interactable = nftManager.walletFlg;
             loginButton.onClick.SetListener(() => {
+                // auth.LoginFlg = true;
+                
                 auth.LoginUser();
             });
 

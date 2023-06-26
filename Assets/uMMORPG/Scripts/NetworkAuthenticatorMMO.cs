@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using Mirror;
@@ -26,23 +27,31 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string playFabId;
     public string sessionTicket;
     public string signedTicket;
+    public Task ClientWalletSign;
+    public bool LoginFlg =false;
     [Header("Events")]
     public UnityEvent OnSignedClientCallback;
     public UnityEvent OnFailedSignClientCallback;
 
     public async void SignAndSendTicket() {
-       string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-        print(walletAddress);
+        print("===========SignAndSendTicket==========");
+        try{
+            string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+            
 
-        signedTicket = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+            signedTicket = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
 
-        SignTicketMsg message = new SignTicketMsg {
-            account=loginAccount,
-            playFabId=playFabId,
-            sessionTicket=sessionTicket,
-            signedTicket=signedTicket,
-        };
-        NetworkClient.connection.Send(message);
+            SignTicketMsg message = new SignTicketMsg {
+                account=loginAccount,
+                playFabId=playFabId,
+                sessionTicket=sessionTicket,
+                signedTicket=signedTicket,
+            };
+            NetworkClient.connection.Send(message);
+        }catch(Exception e){
+            Debug.LogWarning($"Error SignAndSendTicket: {e}");
+        }
+       
     }
 
     public void RegisterEmail() {
@@ -66,7 +75,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     }
 
     public void LoginUser() {
-        Debug.Log("In LoginUser");
+
+        Debug.Log("In LoginUser:"+loginAccount);
         var request = new LoginWithEmailAddressRequest {
             Email = loginAccount,
             Password = loginPassword
@@ -84,11 +94,10 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             // // FIXME: We need to move the call to this code into the two stage sign in process --jrr
             // ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
             // FIXME: We need to move these calls into the two-stage sign-in process --jrr
-            string signedTicketTask = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+            // ClientWalletSign = ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
             // signedTicketTask.Wait();
             // signedTicket = signedTicketTask.Result;
             OnSignedClientCallback?.Invoke();
-            Debug.LogWarning("signedTicket: " + signedTicketTask);
         }
         catch (Exception e)
         {
@@ -99,8 +108,16 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     }
 
     public async void OnStartClientAfterPlayFab(){
-        manager.StartClient();
-        OnClientAuthenticate();
+        try{
+            // var signResult = await ClientWalletSign;
+            // print(signResult);
+            manager.StartClient();
+            OnClientAuthenticate();
+        }
+        catch (Exception e)
+        {
+            
+        }
     }
 
     public void OnClientWalletConnect() {

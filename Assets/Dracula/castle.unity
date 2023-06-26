@@ -33080,6 +33080,7 @@ MonoBehaviour:
   quitButton: {fileID: 2006969991}
   resetPasswordButton: {fileID: 154042307}
   pasteButton: {fileID: 354678941}
+  nftManager: {fileID: 1805048813}
   userNameInput: {fileID: 0}
   userPassInput: {fileID: 341255536}
 --- !u!1 &553875512
@@ -58491,11 +58492,16 @@ PrefabInstance:
     - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
         type: 3}
       propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
         type: 3}
       propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
+        type: 3}
+      propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
@@ -58505,7 +58511,17 @@ PrefabInstance:
       objectReference: {fileID: 1805048813}
     - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
         type: 3}
+      propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 987002999}
+    - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
+        type: 3}
       propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
+        type: 3}
+      propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
@@ -58515,12 +58531,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
         type: 3}
+      propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: LoginUser
+      objectReference: {fileID: 0}
+    - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
+        type: 3}
       propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: NFTManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
         type: 3}
+      propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: NetworkAuthenticatorMMO, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
+        type: 3}
       propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1335404546467394145, guid: a6218c0a90161f349bc6bc87fbc624da,
+        type: 3}
+      propertyPath: OnConnectedCallback.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1335404546759128317, guid: a6218c0a90161f349bc6bc87fbc624da,
