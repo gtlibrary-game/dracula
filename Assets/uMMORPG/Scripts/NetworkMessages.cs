@@ -25,6 +25,15 @@ public partial struct RegisterMsg : NetworkMessage
 //     public string password;
 // }
 
+public partial struct SignTicketMsg : NetworkMessage{
+    public string account;
+    public string version;
+
+    public string playFabId;
+    public string sessionTicket;
+    public string signedTicket;
+}
+
 public partial struct CharacterCreateMsg : NetworkMessage
 {
     public string name;

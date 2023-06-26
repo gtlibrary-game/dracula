@@ -121,8 +121,15 @@ namespace Thirdweb
             }
             else
             {
-                if (chainId == -1)
-                    throw new UnityException("Chain ID override required for native platforms!");
+                // if (chainId == -1)
+                //     throw new UnityException("Chain ID override required for native platforms!");
+                if (chainId == -1) {
+                    //throw new UnityException("Chain ID override required for native platforms!");
+                    chainId = 43113;
+                    //print("Native platform: avalanche-fuji as Chain ID override.");
+
+                    chainOrRPC = "avalanche-fuji";
+                }
                 string rpc = !chainOrRPC.StartsWith("https://") ? $"https://{chainOrRPC}.rpc.thirdweb.com/339d65590ba0fa79e4c8be0af33d64eda709e13652acb02c6be63f5a1fbef9c3" : chainOrRPC;
                 this.session = new ThirdwebSession(options, chainId, rpc);
             }
