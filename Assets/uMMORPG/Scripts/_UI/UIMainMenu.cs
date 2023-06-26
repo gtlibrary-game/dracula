@@ -18,7 +18,6 @@ public class UIMainMenu : MonoBehaviour
     public Button GameSettingButton;
     public Button HeroNFTsButton;
     public GameObject HeroNFTsTab;
-
     public Button GameButton;
     public Button BookmarkButton;
     void Update()

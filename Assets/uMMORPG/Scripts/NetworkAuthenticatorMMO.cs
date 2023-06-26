@@ -10,6 +10,25 @@ using PlayFab.ClientModels;
 using PlayFab.ServerModels;
 using System.Collections.Generic;
 using Thirdweb;
+
+public class TempToken {
+    public string Token { get; }
+    public DateTime Expiration { get; }
+
+    public TempToken() {
+        // Generate a random token string
+        Token = Guid.NewGuid().ToString();
+
+        // Set expiration to 10 minutes from now
+        Expiration = DateTime.UtcNow.AddMinutes(10);
+    }
+
+    public bool IsExpired() {
+        return DateTime.UtcNow >= Expiration;
+    }
+}
+
+
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
     [Header("Components")]
@@ -266,10 +285,10 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     // {
 
     // }
-    Dictionary<string, NetworkConnectionToClient> ticketToConn = new Dictionary<string, NetworkConnectionToClient>();
-    Dictionary<string, string> playFabIdToTicket = new Dictionary<string, string>();
-    Dictionary<string, string> playFabIdToSigned = new Dictionary<string, string>();
-    Dictionary<string, string> playFabIdToAccount = new Dictionary<string, string>();
+    public Dictionary<string, NetworkConnectionToClient> ticketToConn = new Dictionary<string, NetworkConnectionToClient>();
+    public Dictionary<string, string> playFabIdToTicket = new Dictionary<string, string>();
+    public Dictionary<string, string> playFabIdToSigned = new Dictionary<string, string>();
+    public Dictionary<string, string> playFabIdToAccount = new Dictionary<string, string>();
 
 
     private async void SetWalletAddressFromSignedTicket(string playFabId, string account) {

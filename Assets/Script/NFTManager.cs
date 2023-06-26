@@ -11,6 +11,7 @@ using Mirror;
 using TMPro;
 // using BLINK.RPGBuilder.Managers;
 using System.Threading.Tasks;
+
 public class NFTManager : MonoBehaviour
 {
     // public Text connectedText, progressText;
@@ -23,10 +24,11 @@ public class NFTManager : MonoBehaviour
     public GameObject CanvasMng;
     public int NextTokenId;
     public bool walletFlg = false;
-
+    public NetworkAuthenticatorMMO auth;
     public GameObject LoginButton;
     public GameObject RegisterButton;
     public GameObject ConnectWalletButton;
+    public TextMeshProUGUI nowCharacterName;
     Dictionary<string, int> classValues = new Dictionary<string, int>
     {
         {"Warrior", 15},
@@ -103,13 +105,26 @@ public class NFTManager : MonoBehaviour
         return await contract.Read<int>("_getNextTokenId");
         // return NextTokenId;
     }
-    public async Task heroMint(string heroName){
+    public async void heroMint(){
+        print(auth.playFabId);
+        print(auth.sessionTicket);
+        print(auth.signedTicket);
+        print(nowCharacterName.text);
+        
+        HeroMintNFTMsg message = new HeroMintNFTMsg{
+            playFabId=auth.playFabId,
+            sessionTicket=auth.sessionTicket,
+            signedTicket=auth.signedTicket,
+            nowCharacterName=nowCharacterName.text,
+        }; //, signedTicket=signedTicket};
 
-        int druidValue = classValues[heroName];
-        Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
-        walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-        var resultMint = await contract.Write("heroMint","1",walletAddress,druidValue.ToString(),"1000000000000000000");
-        print(resultMint);
+        NetworkClient.connection.Send(message);
+
+        // int druidValue = classValues[heroName];
+        // Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
+        // walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+        // var resultMint = await contract.Write("heroMint","1",walletAddress,druidValue.ToString(),"1000000000000000000");
+        // print(resultMint);
     }
 
     public async void heroBurn(string i){
@@ -118,7 +133,7 @@ public class NFTManager : MonoBehaviour
     }
 
     public async void OnSignAndSendTicket(){
-        print("OnSignAndSendTicket");
+        // print("OnSignAndSendTicket");
     }
     public async void getAllNFTs()
     {

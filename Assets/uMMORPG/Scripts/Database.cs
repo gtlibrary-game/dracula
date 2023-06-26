@@ -99,6 +99,7 @@ public partial class Database : MonoBehaviour
         public DateTime lastlogin { get; set; }
         public bool banned { get; set; }
         public string importKey {get; set; }
+
     }
     class characters
     {
@@ -345,6 +346,11 @@ public partial class Database : MonoBehaviour
                 heroid = character.heroid,
             };
         return new CharacterStats{};
+    }
+
+    public bool HeroIdUpdate(string characterName, string heroid) {
+        connection.Execute("UPDATE characters SET heroid=? WHERE name=?", heroid, characterName);
+        return true;
     }
 
     private static void ProcessRequest(HttpListenerContext context)
@@ -656,9 +662,26 @@ public partial class Database : MonoBehaviour
         }
     }
 
+    public bool IsOwnerOfHero(string characterName,string clientAccount)
+    {
+        print("======IsOwnerOfHero========");
+        // print(characterName);
+        // print(clientAccount);
+        // // connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=? AND deleted=0", characterName);
+        // characters row = connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=? AND deleted=0", characterName);
+        // print(stats.name);
+        return false;
+        // if(row == null) return false;
+        // print(row.name);
+        // if(row.name == clientAccount) return true;
+        // else return false;
+
+    }
+
     public GameObject CharacterLoad(string characterName, List<Player> prefabs, bool isPreview)
     {
         characters row = connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=? AND deleted=0", characterName);
+        
         if (row != null)
         {
             // instantiate based on the class name

@@ -45,6 +45,17 @@ public partial struct CharacterSelectMsg : NetworkMessage
 {
     public int index;
 }
+public partial struct HeroMintNFTResultMsg : NetworkMessage
+{
+    public int heroId;
+}
+public partial struct HeroMintNFTMsg : NetworkMessage
+{
+    public string playFabId;
+    public string sessionTicket;
+    public string signedTicket;
+    public string nowCharacterName;
+}
 public partial struct CharacterSelect1Msg : NetworkMessage
 {
     public string index;
