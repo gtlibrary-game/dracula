@@ -60,8 +60,8 @@ public class UIHeroNFTsTab : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        NFTManager nFTManagerCS = nftManager.GetComponent<NFTManager>();
-        createHeroButton.interactable = nFTManagerCS.walletFlg;
+        // NFTManager nFTManagerCS = nftManager.GetComponent<NFTManager>();
+        // createHeroButton.interactable = nFTManagerCS.walletFlg;
         
     }
 }
