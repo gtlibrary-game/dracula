@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Events;
 using Mirror;
 using PlayFab;
 using PlayFab.ClientModels;
@@ -25,6 +26,9 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string playFabId;
     public string sessionTicket;
     public string signedTicket;
+    [Header("Events")]
+    public UnityEvent OnSignedClientCallback;
+    public UnityEvent OnFailedSignClientCallback;
 
     public async void SignAndSendTicket() {
        string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
@@ -69,21 +73,32 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         };
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
     }
-    public void OnLoginSuccess(LoginResult result) {
-        playFabId = result.PlayFabId;
-        sessionTicket = result.SessionTicket;
-        Debug.Log("Logged in with PlayFab ID: " + playFabId);
-        Debug.Log("Session ticket: " + sessionTicket);
+    public async void OnLoginSuccess(LoginResult result) {
 
-        // FIXME: We need to move the call to this code into the two stage sign in process --jrr
-        ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+        try{
+            playFabId = result.PlayFabId;
+            sessionTicket = result.SessionTicket;
+            Debug.Log("Logged in with PlayFab ID: " + playFabId);
+            Debug.Log("Session ticket: " + sessionTicket);
 
-        // FIXME: We need to move these calls into the two-stage sign-in process --jrr
-        //var signedTicketTask = ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
-        //signedTicketTask.Wait();
-        //signedTicket = signedTicketTask.Result;
+            // // FIXME: We need to move the call to this code into the two stage sign in process --jrr
+            // ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+            // FIXME: We need to move these calls into the two-stage sign-in process --jrr
+            string signedTicketTask = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+            // signedTicketTask.Wait();
+            // signedTicket = signedTicketTask.Result;
+            OnSignedClientCallback?.Invoke();
+            Debug.LogWarning("signedTicket: " + signedTicketTask);
+        }
+        catch (Exception e)
+        {
+            OnFailedSignClientCallback?.Invoke();
+            Debug.LogWarning($"Error Sign Client: {e}");
+            
+        }
+    }
 
-        //Debug.LogWarning("signedTicket: " + signedTicket);
+    public async void OnStartClientAfterPlayFab(){
         manager.StartClient();
         OnClientAuthenticate();
     }
@@ -169,8 +184,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         WalletConnection wc = new WalletConnection (WalletProvider.LocalWallet, 43113, "password");
         ThirdwebManager.Instance.SDK.wallet.Connect(wc);
 
-        string signature = await ThirdwebManager.Instance.SDK.wallet.Sign("Mesg");
-        print("Signature: " + signature);
+        var signature = await ThirdwebManager.Instance.SDK.wallet.Sign("Mesg");
 
         
         // FIXME: Send the game owner wallet one loot of id 1 to verify the game contracts are working.
