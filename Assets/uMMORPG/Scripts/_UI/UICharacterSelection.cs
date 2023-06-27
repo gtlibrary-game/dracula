@@ -39,6 +39,7 @@ public partial class UICharacterSelection : MonoBehaviour
                     startButton.onClick.SetListener(() => {
                         // set client "ready". we will receive world messages from
                         // monsters etc. then.
+                        // NetworkClient.Send(new CharacterSelectMsg{ characterName });
                         NetworkClient.Ready();
 
                         // send CharacterSelect message (need to be ready first!)

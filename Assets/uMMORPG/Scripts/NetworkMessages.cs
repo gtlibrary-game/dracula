@@ -44,6 +44,7 @@ public partial struct CharacterCreateMsg : NetworkMessage
 public partial struct CharacterSelectMsg : NetworkMessage
 {
     public int index;
+    public string characterName;
 }
 public partial struct HeroMintNFTResultMsg : NetworkMessage
 {
@@ -55,6 +56,8 @@ public partial struct HeroMintNFTMsg : NetworkMessage
     public string sessionTicket;
     public string signedTicket;
     public string nowCharacterName;
+    public string heroId;
+
 }
 public partial struct CharacterSelect1Msg : NetworkMessage
 {

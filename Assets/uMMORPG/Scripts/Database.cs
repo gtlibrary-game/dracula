@@ -348,9 +348,8 @@ public partial class Database : MonoBehaviour
         return new CharacterStats{};
     }
 
-    public bool HeroIdUpdate(string characterName, string heroid) {
-        connection.Execute("UPDATE characters SET heroid=? WHERE name=?", heroid, characterName);
-        return true;
+    public int HeroIdUpdate(string characterName, int heroid) {
+        return connection.Execute("UPDATE characters SET heroid=? WHERE name=?", heroid, characterName);
     }
 
     private static void ProcessRequest(HttpListenerContext context)
@@ -469,6 +468,16 @@ public partial class Database : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public void TryRegister(string account)
+    {
+        // characters row = connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=?", account);
+        print(account);
+        var row = connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=?", account);
+        if(row!=null)
+        print(row.name);
+        print("SELECT * FROM characters WHERE name=?");
     }
 
     // character data //////////////////////////////////////////////////////////

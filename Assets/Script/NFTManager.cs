@@ -111,20 +111,27 @@ public class NFTManager : MonoBehaviour
         print(auth.signedTicket);
         print(nowCharacterName.text);
         
+        // int druidValue = classValues[heroName];
+        Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
+        walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+        var nowTokenId = await getNextTokenId();
+        var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
+
+        string characterName = auth.manager.charactersAvailableMsg.characters[auth.manager.selection].name;
+        auth.manager.nowCharacterName = characterName;
+        print(characterName);
+        print(auth.manager.selection);
         HeroMintNFTMsg message = new HeroMintNFTMsg{
             playFabId=auth.playFabId,
             sessionTicket=auth.sessionTicket,
             signedTicket=auth.signedTicket,
-            nowCharacterName=nowCharacterName.text,
+            nowCharacterName=characterName,
+            heroId = nowTokenId.ToString()
         }; //, signedTicket=signedTicket};
-
+        // HeroMintNFTMsg message = new HeroMintNFTMsg{account=characterName, password="hash", version=Application.version};
         NetworkClient.connection.Send(message);
+        Debug.Log("HeroMintNFTMsg message was sent");
 
-        // int druidValue = classValues[heroName];
-        // Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
-        // walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-        // var resultMint = await contract.Write("heroMint","1",walletAddress,druidValue.ToString(),"1000000000000000000");
-        // print(resultMint);
     }
 
     public async void heroBurn(string i){

@@ -18520,9 +18520,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'HideoYamamotoDev@gmail.com
-
-'
+  m_Text: HideoYamamotoDev@gmail.c
 --- !u!222 &304047557
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -57559,6 +57557,7 @@ MonoBehaviour:
   - {fileID: 1173784348}
   selectionCameraLocation: {fileID: 2102420753}
   playerClasses: []
+  conttAddress: 0x37D37a45F41F5f389Fd533c9dF8deeeB37D9Cd84
   characterLimit: 4
   characterNameMaxLength: 16
   saveInterval: 30
@@ -57590,7 +57589,13 @@ MonoBehaviour:
   onServerCharacterSelect:
     m_PersistentCalls:
       m_Calls: []
+  onRegister:
+    m_PersistentCalls:
+      m_Calls: []
   onServerCharacterDelete:
+    m_PersistentCalls:
+      m_Calls: []
+  onServerHeroMintNFT:
     m_PersistentCalls:
       m_Calls: []
   onClientDisconnect:
@@ -75195,8 +75200,8 @@ RectTransform:
   - {fileID: 1631146773}
   - {fileID: 1646498366}
   - {fileID: 1125313066}
-  - {fileID: 1488689287}
   - {fileID: 1263319293}
+  - {fileID: 1488689287}
   - {fileID: 1340822917}
   - {fileID: 1737693479}
   - {fileID: 638351395}
@@ -75687,7 +75692,7 @@ RectTransform:
   m_Children:
   - {fileID: 185291480}
   m_Father: {fileID: 1256386076}
-  m_RootOrder: 17
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -90446,18 +90451,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1488689286}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1256386076}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -352, y: 154}
-  m_SizeDelta: {x: -1596, y: 0}
+  m_AnchoredPosition: {x: -352.00006, y: 153.99998}
+  m_SizeDelta: {x: -1595.9999, y: 0.00012207031}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1488689288
 MonoBehaviour:
@@ -104830,7 +104835,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 12.000305}
+  m_AnchoredPosition: {x: 0, y: 12.000244}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1748409325

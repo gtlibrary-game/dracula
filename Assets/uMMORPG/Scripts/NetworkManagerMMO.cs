@@ -26,6 +26,7 @@ public enum NetworkState { Offline, Handshake, Lobby, World }
 [Serializable] public class UnityEventStringGameObjectNetworkConnectionCharacterSelect1Msg : UnityEvent<string, string, string> {}
 [Serializable] public class UnityEventCharacterDeleteMsg : UnityEvent<CharacterDeleteMsg> {}
 [Serializable] public class UnityEventNetworkConnection : UnityEvent<NetworkConnection> {}
+[Serializable] public class UnityEventHeroMintNFTMsg : UnityEvent<HeroMintNFTMsg> {}
 
 [RequireComponent(typeof(Database))]
 [DisallowMultipleComponent]
@@ -67,6 +68,8 @@ public partial class NetworkManagerMMO : NetworkManager
     public int selection = -1;
     public Transform[] selectionLocations;
     public Transform selectionCameraLocation;
+    public string nowCharacterName;
+
     [HideInInspector] public List<Player> playerClasses = new List<Player>(); // cached in Awake
     public string conttAddress = "0x37D37a45F41F5f389Fd533c9dF8deeeB37D9Cd84";
 
@@ -87,13 +90,13 @@ public partial class NetworkManagerMMO : NetworkManager
     public UnityEventCharactersAvailableMsg onClientCharactersAvailable;
     public UnityEventCharacterCreateMsgPlayer onServerCharacterCreate;
     public UnityEventStringGameObjectNetworkConnectionCharacterSelectMsg onServerCharacterSelect;
-    // public UnityEventStringGameObjectNetworkConnectionCharacterSelect1Msg OnRegister;
+    public UnityEventStringGameObjectNetworkConnectionCharacterSelect1Msg onRegister;
     public UnityEventCharacterDeleteMsg onServerCharacterDelete;
+    public UnityEventHeroMintNFTMsg onServerHeroMintNFT;
     public UnityEventNetworkConnection onClientDisconnect;
     public UnityEventNetworkConnection onServerDisconnect;
     // store characters available message on client so that UI can access it
     [HideInInspector] public CharactersAvailableMsg charactersAvailableMsg;
-
     // name checks /////////////////////////////////////////////////////////////
     // virtual in case someone wants to modify
     public virtual bool IsAllowedCharacterName(string characterName)
@@ -193,38 +196,21 @@ public partial class NetworkManagerMMO : NetworkManager
         NetworkServer.RegisterHandler<CharacterCreateMsg>(OnServerCharacterCreate);
         NetworkServer.RegisterHandler<CharacterSelectMsg>(OnServerCharacterSelect);
         NetworkServer.RegisterHandler<CharacterDeleteMsg>(OnServerCharacterDelete);
-        NetworkServer.RegisterHandler<HeroMintNFTMsg>(OnServerHeroMintNFT);
-
+        // NetworkServer.RegisterHandler<Register>(OnServerCharacterDelete);
+        // NetworkServer.RegisterHandler<CharacterSelect1Msg>(OnServerCharacterSelect1);
+        NetworkServer.RegisterHandler<HeroMintNFTMsg>(OnServerHeroMintNFT,false);
         // invoke saving
         InvokeRepeating(nameof(SavePlayers), saveInterval, saveInterval);
 
         // addon system hooks
         onStartServer.Invoke();
     }
-
-    async void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
-    {
-        print("============OnServerHeroMintNFT===============" + message.nowCharacterName);
-
-        if (!string.IsNullOrEmpty(message.nowCharacterName))
-        {
-            CharacterStats nowCharacter = Database.singleton.GetCharacterStats(message.nowCharacterName);
-
-            string walletAddress = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(auth.playFabIdToTicket[message.playFabId], auth.playFabIdToSigned[message.playFabId]);
-            string account = auth.playFabIdToAccount[message.playFabId];
-            Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
-            var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
-            print(resultMint);
-            // Database.singleton.HeroIdUpdate(message.nowCharacterName,Int.Parse(resultMint));
-            // conn.Send(new HeroMintNFTResultMsg{ heroId = resultMint });
-
-            if(nowCharacter.name != null)
-            {
-                
-            }
-            
-        }
+    void OnServerCharacterSelect1(NetworkConnectionToClient conn, CharacterSelect1Msg message){
+        print(message.index);
+        CharacterStats nowCharacter = Database.singleton.GetCharacterStats(message.index);
+        print(nowCharacter.name);
     }
+
     // public async void OnServerHeroMintNFT(NetworkConnection conn, HeroMintNFTMsg message)
     // {
     //     print("============OnServerHeroMintNFT===============");
@@ -362,6 +348,7 @@ public partial class NetworkManagerMMO : NetworkManager
     void OnClientHeroMintNFT(HeroMintNFTResultMsg message)
     {
         print("OnClientHeroMintNFT:"+message.heroId);
+        
     }
     void OnClientCharactersAvailable(CharactersAvailableMsg message)
     {
@@ -442,6 +429,13 @@ public partial class NetworkManagerMMO : NetworkManager
         player.isGameMaster = gameMaster;
 
         return player;
+    }
+
+    async void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
+    {
+        print(message.nowCharacterName);
+        int myCharacter = Database.singleton.HeroIdUpdate(message.nowCharacterName,int.Parse(message.heroId));
+        print(myCharacter);
     }
 
     void OnServerCharacterCreate(NetworkConnection conn, CharacterCreateMsg message)
