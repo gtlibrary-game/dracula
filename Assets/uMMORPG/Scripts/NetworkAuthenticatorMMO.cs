@@ -8,6 +8,11 @@ using PlayFab.ClientModels;
 using PlayFab.ServerModels;
 using System.Collections.Generic;
 using Thirdweb;
+//using UCompile;
+using MoonSharp.Interpreter;
+using OpenAI;
+
+
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
     [Header("Components")]
@@ -25,6 +30,52 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string playFabId;
     public string sessionTicket;
     public string signedTicket;
+
+    public async void LoadScripts() {
+        //Debug.Log("In Load Scripts");
+
+        OpenAIApi openai = new OpenAIApi();
+        List<OpenAI.ChatMessage> messages = new List<OpenAI.ChatMessage>();
+
+        var newMessage = new OpenAI.ChatMessage() {
+                Role = "user",
+                Content = "hello there computer?"
+        };
+
+        messages.Add(newMessage);
+
+        // Complete the instruction  // See Johnrraymond for { api_key: "sk-...." }  ->  %USERPROFILE%\.openai\auth.json 
+        // See https://github.com/srcnalt/OpenAI-Unity
+        var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest() {
+                Model = "gpt-3.5-turbo-0301",
+                Messages = messages
+        });
+
+        if (completionResponse.Choices != null && completionResponse.Choices.Count > 0) {
+            var message = completionResponse.Choices[0].Message;
+            message.Content = message.Content.Trim();
+
+            Debug.Log("AI message is: " + message.Content);
+        }
+                
+
+	    string script = @"    
+		-- defines a factorial function
+		function fact (n)
+			if (n == 0) then
+				return 1
+			else
+				return n*fact(n - 1)
+			end
+		end
+
+
+		return fact(5)";
+
+	    DynValue res = Script.RunString(script);
+	    Debug.LogWarning("result: " + res.Number);
+    
+    }
 
     public async void SignAndSendTicket() {
         string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
@@ -185,6 +236,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // NetworkServer.RegisterHandler<ResetPasswordMsg>(OnServerResetPassword, false);
 
         LoadServerWallet();
+
+        LoadScripts();
     }
 
     public override void OnServerAuthenticate(NetworkConnectionToClient conn)

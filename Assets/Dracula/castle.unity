@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4453112, g: 0.49495482, b: 0.5739472, a: 1}
+  m_IndirectSpecularColor: {r: 0.4453119, g: 0.49495554, b: 0.5739477, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -10531,9 +10531,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c09ac9174a1f1bc4696000aea9b15ca1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 159557691}
-  networkManagerObj: {fileID: 987002996}
-  characterName: {fileID: 2011846653}
 --- !u!1 &162636137
 GameObject:
   m_ObjectHideFlags: 0
@@ -57432,6 +57429,7 @@ MonoBehaviour:
   accountMaxLength: 16
   playFabId: 
   sessionTicket: 
+  signedTicket: 
 --- !u!114 &987003000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104502,7 +104500,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 12.000305}
+  m_AnchoredPosition: {x: 0, y: 12.000275}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1748409325
