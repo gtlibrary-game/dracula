@@ -437,7 +437,6 @@ public partial class NetworkManagerMMO : NetworkManager
         int myCharacter = Database.singleton.HeroIdUpdate(message.nowCharacterName,int.Parse(message.heroId));
         print(myCharacter);
     }
-
     void OnServerCharacterCreate(NetworkConnection conn, CharacterCreateMsg message)
     {
         //Debug.Log("OnServerCharacterCreate " + conn);
