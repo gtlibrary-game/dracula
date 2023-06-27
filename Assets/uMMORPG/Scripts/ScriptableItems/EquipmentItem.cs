@@ -14,6 +14,7 @@ public class EquipmentItem : UsableItem
     [Range(0, 1)] public float criticalChanceBonus;
     public GameObject modelPrefab;
 
+
     // usage
     // -> can we equip this into any slot?
     public override bool CanUse(Player player, int inventoryIndex)
@@ -69,6 +70,7 @@ public class EquipmentItem : UsableItem
     // tooltip
     public override string ToolTip()
     {
+
         StringBuilder tip = new StringBuilder(base.ToolTip());
         tip.Replace("{CATEGORY}", category);
         tip.Replace("{DAMAGEBONUS}", damageBonus.ToString());

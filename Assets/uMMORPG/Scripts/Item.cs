@@ -12,6 +12,9 @@ using System.Text;
 using UnityEngine;
 using Mirror;
 
+using MoonSharp.Interpreter;
+using OpenAI;
+
 [Serializable]
 public partial struct Item
 {
@@ -29,6 +32,13 @@ public partial struct Item
     public int summonedLevel; // stored in item while summonable unsummoned
     public long summonedExperience; // stored in item while summonable unsummoned
 
+    // The server side code for the items (may also run on client)
+    public string luaScriptFlavor;
+    public string luaScriptOnUse;
+    public string luaScriptOnDamageDealtTo;
+
+    public bool superDiced;
+
     // constructors
     public Item(ScriptableItem data)
     {
@@ -38,6 +48,98 @@ public partial struct Item
         summonedHealth = data is SummonableItem summonable ? summonable.summonPrefab.health.max : 0;
         summonedLevel = data is SummonableItem ? 1 : 0;
         summonedExperience = 0;
+        superDiced = false;
+
+        luaScriptFlavor = null;
+        luaScriptOnUse = null;
+        luaScriptOnDamageDealtTo = null;
+
+        if(data is EquipmentItem && !superDiced) {
+            SuperDice((EquipmentItem) data);
+        }
+
+    }
+    
+    private async void getAIForOnDamageDealtTo(EquipmentItem data) {
+        luaScriptOnDamageDealtTo = "FIXME: need to call into the AI got get the unqiue script for this item."; //-jrr
+    }
+    private async void getAIForItemFlavor(EquipmentItem data) {
+
+        OpenAIApi openai = new OpenAIApi();
+        List<OpenAI.ChatMessage> messages = new List<OpenAI.ChatMessage>();
+
+        var systemMessage = new OpenAI.ChatMessage() {
+            Role = "system",
+            Content = @"I write lua code for the game Dracula
+```lua
+function code() {
+  -- Like this...
+end
+```
+I try to keep comments and code vague enough for them to be true."
+
+        };
+        messages.Add(systemMessage);
+
+        var newMessage = new OpenAI.ChatMessage() {
+            Role = "user",
+            Content = "Write me just the lua code for a function called flavor() that returns very flowery item flavor text based on \n" 
+                            + data.name + ", damage bonus: " + data.damageBonus + ". health bonus: " + data.healthBonus + ", mana bonus: " + data.manaBonus + "\n" +
+                            "Remain vague about what the item actually does."
+        };
+
+        messages.Add(newMessage);
+
+        // Complete the instruction  // See Johnrraymond for { api_key: "sk-...." }  ->  %USERPROFILE%\.openai\auth.json 
+        // See https://github.com/srcnalt/OpenAI-Unity
+        var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest() {
+                Model = "gpt-3.5-turbo-0301",
+                Messages = messages
+        });
+
+        if (completionResponse.Choices != null && completionResponse.Choices.Count > 0) {
+            var message = completionResponse.Choices[0].Message;
+            message.Content = message.Content.Trim();
+
+            Debug.Log("AI message is: " + message.Content);
+
+            string input = message.Content;
+            string output;
+
+        int start = input.IndexOf("```lua");
+        if (start != -1) {
+            start += 6;
+            int end = input.IndexOf("```", start);
+
+            output = input.Substring(start, end - start);
+
+            Console.WriteLine(output);
+        } else {
+            Console.WriteLine("Start quote not found.");
+            // no change to output.
+            output = message.Content;
+        }
+
+        try {
+            DynValue res = Script.RunString(output + "return flavor()");
+	        Debug.LogWarning("result: " + res.String);
+
+            luaScriptFlavor = res.String;
+        } catch(Exception e) {
+            
+            luaScriptFlavor = message.Content +  " and " + e;
+        }
+        }
+
+    }
+
+    [Server]
+    public async void SuperDice(EquipmentItem data) {
+        getAIForItemFlavor(data);
+        getAIForOnDamageDealtTo(data);
+
+        //Need to tell the player the special effect so it can show up
+        //in their UI. FIXME. --jrr
     }
 
     // wrappers for easier access

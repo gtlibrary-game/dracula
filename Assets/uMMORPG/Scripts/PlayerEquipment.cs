@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using MoonSharp.Interpreter;
+
 
 [Serializable]
 public partial struct EquipmentInfo
@@ -38,6 +40,27 @@ public class PlayerEquipment : Equipment
 
     // cached SkinnedMeshRenderer bones without equipment, by name
     Dictionary<string, Transform> skinBones = new Dictionary<string, Transform>();
+
+
+    // Use AI dice: high temp: 
+    [Server]
+    public void SuperDice(int inventoryIndex)
+    {
+        // validate: make sure that the slots actually exist in the inventory
+        // and in the equipment
+        if (inventory.InventoryOperationsAllowed()) {
+
+            // item slot has to be non empty
+            ItemSlot slot = inventory.slots[inventoryIndex];
+            if (slot.amount != 0 && slot.item.data is EquipmentItem itemData)
+            {
+                // slot item data can be checked to see if it is already diced.
+                
+            }
+        }
+    }
+
+
 
     void Awake()
     {
@@ -278,17 +301,39 @@ public class PlayerEquipment : Equipment
         }
     }
 
+
     // durability //////////////////////////////////////////////////////////////
     public void OnDamageDealtTo(Entity victim)
     {
         // reduce weapon durability by one each time we attacked someone
         int weaponIndex = GetEquippedWeaponIndex();
-        if (weaponIndex != -1)
-        {
+        if (weaponIndex != -1) {
             ItemSlot slot = slots[weaponIndex];
             slot.item.durability = Mathf.Clamp(slot.item.durability - 1, 0, slot.item.maxDurability);
             slots[weaponIndex] = slot;
         }
+
+        for (int i = 0; i < slots.Count; ++i) {
+            PlayLuaScriptOnDamageDealtTo(slots[i], victim);
+        }
+    }
+
+    private int inOnDamageDealtTo = 0;
+    void PlayLuaScriptOnDamageDealtTo(ItemSlot itemSlot, Entity victim){
+        if(inOnDamageDealtTo > 3) {         // Limit all cascades to 3 levels.
+            return;
+        }
+        inOnDamageDealtTo += 1;
+
+        // FIXME: Need to prepare the inputs to the OnDamageDealthScript
+
+        // Run the lua script here.
+        DynValue res = Script.RunString(itemSlot.item.luaScriptOnDamageDealtTo);
+	    //Debug.LogWarning("result: " + res.String);
+
+        // FIXME: Need to do what the script result says to do to the player and victim
+
+        inOnDamageDealtTo -= 1;
     }
 
     public void OnReceivedDamage(Entity attacker, int damage)
