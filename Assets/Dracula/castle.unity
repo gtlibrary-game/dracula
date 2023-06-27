@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4453112, g: 0.49495482, b: 0.5739472, a: 1}
+  m_IndirectSpecularColor: {r: 0.4453119, g: 0.49495554, b: 0.5739477, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -18525,7 +18525,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: HideoYamamotoDev@gmail.c
+  m_Text: 'HideoYamamotoDev@gmail.com
+
+'
 --- !u!222 &304047557
 CanvasRenderer:
   m_ObjectHideFlags: 0

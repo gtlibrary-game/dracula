@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fab4c8aa45a00a4382115b2edcb0f33, type: 3}
+  m_Script: {fileID: 11500000, guid: 56ba3964e6bcf6946920b0b6b0aa8a5e, type: 3}
   m_Name: PlayFabSharedSettings
   m_EditorClassIdentifier: 
   TitleId: C0C36
