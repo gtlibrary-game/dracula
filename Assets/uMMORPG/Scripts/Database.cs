@@ -349,7 +349,9 @@ public partial class Database : MonoBehaviour
     }
 
     public int HeroIdUpdate(string characterName, int heroid) {
+        if(heroid >0 )
         return connection.Execute("UPDATE characters SET heroid=? WHERE name=?", heroid, characterName);
+        else return 0;
     }
 
     private static void ProcessRequest(HttpListenerContext context)

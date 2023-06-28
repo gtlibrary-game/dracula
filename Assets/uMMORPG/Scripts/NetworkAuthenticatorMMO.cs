@@ -45,31 +45,32 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public int accountMaxLength = 256;
     public string playFabId;
     public string sessionTicket;
-    public string signedTicket;
+    public string signedTicket = null;
     public Task ClientWalletSign;
     public bool LoginFlg =false;
     [Header("Events")]
     public UnityEvent OnSignedClientCallback;
     public UnityEvent OnFailedSignClientCallback;
 
-    public async Task SignAndSendTicket() {
-        print("===========SignAndSendTicket==========");
-        try{
-            string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-            
-
-            signedTicket = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
-
-            SignTicketMsg message = new SignTicketMsg {
-                account=loginAccount,
-                playFabId=playFabId,
-                sessionTicket=sessionTicket,
-                signedTicket=signedTicket,
-            };
-            NetworkClient.connection.Send(message);
-        }catch(Exception e){
-            Debug.LogWarning($"Error SignAndSendTicket: {e}");
-        }
+    public async void SignAndSendTicket() {
+        print("===========SignAndSendTicket=========="+signedTicket);
+        // try{
+                
+        //     if(signedTicket == null)
+        //     {
+                string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+                signedTicket = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
+                SignTicketMsg message = new SignTicketMsg {
+                    account=loginAccount,
+                    playFabId=playFabId,
+                    sessionTicket=sessionTicket,
+                    signedTicket=signedTicket,
+                };
+                NetworkClient.connection.Send(message);
+        //     }
+        // }catch(Exception e){
+        //     Debug.LogWarning($"Error SignAndSendTicket: {e}");
+        // }
        
     }
 
@@ -199,7 +200,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     void OnClientLoginSuccess(LoginSuccessMsg msg)
     {
         //------- Production mode----------//
-        SignAndSendTicket();
+        // SignAndSendTicket();
         //---------------------------------//
         // authenticated successfully. OnClientConnected will be called.
         OnClientAuthenticated.Invoke();
@@ -309,7 +310,6 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         string address = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(playFabIdToTicket[playFabId], playFabIdToSigned[playFabId]);
         Debug.LogWarning("Setting the following address: " + address);
         Debug.LogWarning("Account: " + account);
-
         // FIXME: we should send back an all clear message saying that the account is linked.
     }
 

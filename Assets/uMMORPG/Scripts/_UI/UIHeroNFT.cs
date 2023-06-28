@@ -13,11 +13,19 @@ public partial class UIHeroNFT : MonoBehaviour
     public Image trashImage;
     public GameObject trashOverlay;
     public Text trashAmountText;
-
+    public Button MintButton;
+    public NFTManager nftManager;
     [Header("Durability Colors")]
     public Color brokenDurabilityColor = Color.red;
     public Color lowDurabilityColor = Color.magenta;
     [Range(0.01f, 0.99f)] public float lowDurabilityThreshold = 0.1f;
+
+    void OnEnable(){
+        MintButton.onClick.SetListener(() => {
+            nftManager.mintButtonFlg = true;
+            nftManager.heroMint();
+        });
+    }
 
     void Update()
     {

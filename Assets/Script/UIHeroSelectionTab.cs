@@ -17,6 +17,7 @@ public class UIHeroSelectionTab : MonoBehaviour
     public Button MintButton;
     public TextMeshProUGUI nameInput;
     public string currentCharacterName = null;
+    public NFTManager nftManager;
     void Start()
     {
         
@@ -26,27 +27,10 @@ public class UIHeroSelectionTab : MonoBehaviour
         int index = selecting.GetSiblingIndex();
         DisplayCharacter(selecting);
         // mintButton.interactable = manager.IsAllowedCharacterName(nameInput.text);
-        // MintButton.onClick.SetListener(async () => {
-        //     Contract contract = ThirdwebManager.Instance.SDK.GetContract(nftManager.conttAddress,nftManager.abihero);
-        //     var walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-        //     var nowTokenId = await nftManager.getNextTokenId();
-        //     var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
-
-        //     // string characterName = auth.manager.charactersAvailableMsg.characters[auth.manager.selection].name;
-        //     // auth.manager.nowCharacterName = characterName;
-        //     print(currentCharacterName);
-        //     // print(auth.manager.selection);
-        //     HeroMintNFTMsg message = new HeroMintNFTMsg{
-        //         playFabId=auth.playFabId,
-        //         sessionTicket=auth.sessionTicket,
-        //         signedTicket=auth.signedTicket,
-        //         nowCharacterName=currentCharacterName,
-        //         heroId = nowTokenId.ToString()
-        //     }; //, signedTicket=signedTicket};
-        //     // HeroMintNFTMsg message = new HeroMintNFTMsg{account=characterName, password="hash", version=Application.version};
-        //     NetworkClient.connection.Send(message);
-        //     Debug.Log("HeroMintNFTMsg message was sent");
-        // });
+        MintButton.onClick.SetListener(() => {
+            nftManager.mintButtonFlg = true;
+            nftManager.heroMint();
+        });
     }
 
     void DisplayCharacter(Transform trnsobj){

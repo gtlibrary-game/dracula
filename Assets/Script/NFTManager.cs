@@ -30,6 +30,7 @@ public class NFTManager : MonoBehaviour
     public GameObject ConnectWalletButton;
     public TextMeshProUGUI nowCharacterName;
     public UIHeroSelectionTab uiSelectionTab;
+    public bool mintButtonFlg = false;
     Dictionary<string, int> classValues = new Dictionary<string, int>
     {
         {"Warrior", 15},
@@ -57,8 +58,8 @@ public class NFTManager : MonoBehaviour
     public async Task IsConnectedWallet(){
         var data = await ThirdwebManager.Instance.SDK.wallet.IsConnected();
         if(data){
-            walletFlg = true;
-            ConnectWalletButton.GetComponent<Prefab_ConnectWallet>().WalletConnect();
+
+            // ConnectWalletButton.GetComponent<Prefab_ConnectWallet>().WalletConnect();
         }
         else {
             print("You have to conntect to your wallet!");
@@ -73,7 +74,7 @@ public class NFTManager : MonoBehaviour
 
     public async void onWalletConnected()
     {
-        await auth.SignAndSendTicket();
+       
         walletFlg = true;
         
     }
@@ -128,32 +129,39 @@ public class NFTManager : MonoBehaviour
     }
 
     async public void heroMint(){
-        string characName = uiSelectionTab.currentCharacterName;
-        Player player = Player.localPlayer;
-        if (player != null)
-        {
-            characName = player.name;
-        }
-
-        await IsConnectedWallet();
+        // await IsConnectedWallet();
+        var data = await ThirdwebManager.Instance.SDK.wallet.IsConnected();
+        print("data:"+data);
+        print("mintButtonFlg:"+mintButtonFlg);
+        if(data){
         
-        Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
-        var walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-        var nowTokenId = await getNextTokenId();
-        var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
-        // string characterName = auth.manager.charactersAvailableMsg.characters[auth.manager.selection].name;
-        // auth.manager.nowCharacterName = characterName;
-        print(characName);
-        // print(auth.manager.selection);
-        HeroMintNFTMsg message = new HeroMintNFTMsg{
-            playFabId=auth.playFabId,
-            sessionTicket=auth.sessionTicket,
-            signedTicket=auth.signedTicket,
-            nowCharacterName = characName,
-            heroId = nowTokenId.ToString()
-        }; //, signedTicket=signedTicket};
-        NetworkClient.connection.Send(message);
-        Debug.Log("HeroMintNFTMsg message was sent");
+            string characName = uiSelectionTab.currentCharacterName;
+            Player player = Player.localPlayer;
+            if (player != null)
+            {
+                characName = player.name;
+            } 
+            Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
+            var walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+            var nowTokenId = await getNextTokenId();
+            var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
+            // string characterName = auth.manager.charactersAvailableMsg.characters[auth.manager.selection].name;
+            // auth.manager.nowCharacterName = characterName;
+            print(characName);
+            HeroMintNFTMsg message = new HeroMintNFTMsg{
+                playFabId=auth.playFabId,
+                sessionTicket=auth.sessionTicket,
+                signedTicket=auth.signedTicket,
+                nowCharacterName = characName,
+                heroId = nowTokenId.ToString()
+            }; //, signedTicket=signedTicket};
+            NetworkClient.connection.Send(message);
+            Debug.Log("HeroMintNFTMsg message was sent");
+        }else {
+            if(mintButtonFlg)
+            ConnectWalletButton.GetComponent<Prefab_ConnectWallet>().WalletConnect();
+        }
+        mintButtonFlg = false;
     }
 
     public void getAllcontracts()

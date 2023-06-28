@@ -433,17 +433,36 @@ public partial class NetworkManagerMMO : NetworkManager
 
     async void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
     {
-        string account = lobby[conn];
-        print(account);
-        if(Database.singleton.IsOwnerOfHero(message.nowCharacterName,account))
+        print(auth.playFabIdToAccount[message.playFabId]);
+        if (lobby.ContainsKey(conn) || auth.playFabIdToAccount.ContainsKey(message.playFabId))
         {
-            string walletAddress = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(auth.playFabIdToTicket[message.playFabId], auth.playFabIdToSigned[message.playFabId]);
-            print(walletAddress);
-            int myCharacter = Database.singleton.HeroIdUpdate(message.nowCharacterName,int.Parse(message.heroId));
-            print(myCharacter);
-        }else{
-            ServerSendError(conn, "You are not the owner of this hero.", false);
+            // read the index and find the n-th character
+            // (only if we know that he is not ingame, otherwise lobby has
+            //  no netMsg.conn key)
+            string account = null;
+            if(lobby.ContainsKey(conn)) account = lobby[conn];
+            if(auth.playFabIdToAccount.ContainsKey(message.playFabId)) account = auth.playFabIdToAccount[message.playFabId];
+
+            int myCharacter = 0;
+            if(Database.singleton.IsOwnerOfHero(message.nowCharacterName,account))
+            {
+                string walletAddress = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(message.sessionTicket, message.signedTicket);
+                print(walletAddress);
+
+                if(walletAddress != null)
+                myCharacter = Database.singleton.HeroIdUpdate(message.nowCharacterName,int.Parse(message.heroId));
+
+                print(myCharacter);
+            }else{
+                ServerSendError(conn, "You are not the owner of this hero.", false);
+            }
         }
+        else
+        {
+            Debug.Log("HeroMintNFT: not in lobby" + conn);
+            ServerSendError(conn, "HeroMintNFT: not in lobby", true);
+        }
+        
     }
     void OnServerCharacterCreate(NetworkConnection conn, CharacterCreateMsg message)
     {
