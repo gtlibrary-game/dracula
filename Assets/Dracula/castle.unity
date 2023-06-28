@@ -57518,10 +57518,10 @@ MonoBehaviour:
   state: 0
   uiPopup: {fileID: 2088206766}
   serverList:
+  - name: game.greatlibrary.io
+    ip: game.greatlibrary.io
   - name: localhost
     ip: localhost
-  - name: staging
-    ip: 137.184.85.203
   combatLogoutDelay: 5
   selection: -1
   selectionLocations:

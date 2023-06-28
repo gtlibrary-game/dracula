@@ -11,7 +11,7 @@ using Thirdweb;
 //using UCompile;
 using MoonSharp.Interpreter;
 using OpenAI;
-
+using System.Net.Http;
 
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
@@ -31,9 +31,44 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string sessionTicket;
     public string signedTicket;
 
-    public async void LoadScripts() {
-        //Debug.Log("In Load Scripts");
 
+    [Serializable]
+    public struct FromChatWrapper {
+        public FromChat content;
+        public string type;
+    };
+    [Serializable]
+    public struct FromChat {
+        public string role;
+        public string content;
+    };
+    public async void LoadScripts() {
+
+        //Debug.Log("In Load Scripts");
+        string url = "https://author.greatlibrary.io/art/chat/";
+        using (HttpClient client = new HttpClient())
+        {
+            var content = new MultipartFormDataContent
+            {
+                //{ new StringContent(chatId), "chatId" },
+                //{ new StringContent(sdkId), "" },
+                { new StringContent("True"), "return_json" },
+                { new StringContent("I write moonsharp lua code."), "context" },
+                { new StringContent("Hello computer."), "user_input" },
+                //{ new StringContent(modelId), "modelids" },
+                //{ new StringContent(message1), "message1" },
+                //{ new StringContent(message2), "message2" }
+            };
+
+            var response = await client.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            string result = await response.Content.ReadAsStringAsync();
+            Debug.Log("result from DKC " + result);
+            result = JsonUtility.FromJson<FromChatWrapper>(result).content.content;
+            Debug.Log(result);
+        }
+/*
         OpenAIApi openai = new OpenAIApi();
         List<OpenAI.ChatMessage> messages = new List<OpenAI.ChatMessage>();
 
@@ -58,7 +93,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             Debug.Log("AI message is: " + message.Content);
         }
                 
-
+*/
 	    string script = @"    
 		-- defines a factorial function
 		function fact (n)
