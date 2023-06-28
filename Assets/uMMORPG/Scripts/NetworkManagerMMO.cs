@@ -433,9 +433,17 @@ public partial class NetworkManagerMMO : NetworkManager
 
     async void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
     {
-        print(message.nowCharacterName);
-        int myCharacter = Database.singleton.HeroIdUpdate(message.nowCharacterName,int.Parse(message.heroId));
-        print(myCharacter);
+        string account = lobby[conn];
+        print(account);
+        if(Database.singleton.IsOwnerOfHero(message.nowCharacterName,account))
+        {
+            string walletAddress = await ThirdwebManager.Instance.SDK.wallet.RecoverAddress(auth.playFabIdToTicket[message.playFabId], auth.playFabIdToSigned[message.playFabId]);
+            print(walletAddress);
+            int myCharacter = Database.singleton.HeroIdUpdate(message.nowCharacterName,int.Parse(message.heroId));
+            print(myCharacter);
+        }else{
+            ServerSendError(conn, "You are not the owner of this hero.", false);
+        }
     }
     void OnServerCharacterCreate(NetworkConnection conn, CharacterCreateMsg message)
     {

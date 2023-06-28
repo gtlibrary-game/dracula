@@ -10538,8 +10538,6 @@ MonoBehaviour:
   networkManagerObj: {fileID: 987002996}
   characterName: {fileID: 2011846653}
   MintButton: {fileID: 1253571354}
-  auth: {fileID: 987002999}
-  nftManager: {fileID: 1805048813}
   nameInput: {fileID: 1275495338}
   currentCharacterName: 
 --- !u!1 &162636137
@@ -11393,6 +11391,7 @@ GameObject:
   - component: {fileID: 185291480}
   - component: {fileID: 185291483}
   - component: {fileID: 185291482}
+  - component: {fileID: 185291484}
   m_Layer: 5
   m_Name: EquipmentPanel
   m_TagString: Untagged
@@ -11461,6 +11460,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 185291479}
   m_CullTransparentMesh: 0
+--- !u!114 &185291484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185291479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ec06a3b53fc64cab907adc0dd34f4d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rectTransform: {fileID: 185291480}
 --- !u!1001 &187677375
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18525,7 +18537,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: HideoYamamotoDev@gmail.c
+  m_Text: HideoYamamotoDev@gmail.
 --- !u!222 &304047557
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33548,7 +33560,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 550728574}
   m_HandleRect: {fileID: 550728573}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -38456,19 +38468,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 638351394}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cf10881d50ff45ec93655e548223b04, type: 3}
+  m_Script: {fileID: 11500000, guid: 276381210f3925343b06266b0d715dde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hotKey: 102
+  hotKey: 105
   panel: {fileID: 1134247189}
-  slotPrefab: {fileID: 114075261892402862, guid: fe25bab38867c41dd8562025769a8b9c,
-    type: 3}
   content: {fileID: 870563539}
   goldText: {fileID: 1205654318}
-  trash: {fileID: 743865674}
-  trashImage: {fileID: 743865678}
-  trashOverlay: {fileID: 2061909127}
-  trashAmountText: {fileID: 1526907258}
+  trash: {fileID: 0}
+  trashImage: {fileID: 0}
+  trashOverlay: {fileID: 0}
+  trashAmountText: {fileID: 0}
   brokenDurabilityColor: {r: 1, g: 0, b: 0, a: 1}
   lowDurabilityColor: {r: 1, g: 0, b: 1, a: 1}
   lowDurabilityThreshold: 0.1
@@ -39075,9 +39085,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &651257877
 MonoBehaviour:
@@ -50192,7 +50202,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000027179718}
+  m_AnchoredPosition: {x: 0, y: -0.000034809113}
   m_SizeDelta: {x: 176, y: 4}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &870563540
@@ -68289,7 +68299,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1134247190
 RectTransform:
   m_ObjectHideFlags: 0
@@ -69991,7 +70001,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -11.700012}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1161461872
@@ -70012,7 +70022,7 @@ MonoBehaviour:
   inventoryButton: {fileID: 2123439622}
   inventoryPanel: {fileID: 1984947457}
   equipmentButton: {fileID: 1019211635}
-  equipmentPanel: {fileID: 0}
+  equipmentPanel: {fileID: 185291479}
   skillsButton: {fileID: 948612738}
   skillsPanel: {fileID: 269226300}
   characterInfoButton: {fileID: 675269332}
@@ -74883,7 +74893,7 @@ GameObject:
   - component: {fileID: 1253571355}
   - component: {fileID: 1253571354}
   m_Layer: 5
-  m_Name: MintHeroNFT
+  m_Name: MintHeroNFTButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74955,7 +74965,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1253571355}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1805048813}
+        m_TargetAssemblyTypeName: NFTManager, Assembly-CSharp
+        m_MethodName: heroMint
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1253571355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75666,6 +75688,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1263319293}
+  - component: {fileID: 1263319294}
   m_Layer: 5
   m_Name: Equipment
   m_TagString: Untagged
@@ -75694,6 +75717,26 @@ RectTransform:
   m_AnchoredPosition: {x: 321.86304, y: 0.00003015995}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1263319294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263319292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58b3383ce70dc47f0b0ccb5a1f1df376, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hotKey: 117
+  panel: {fileID: 185291479}
+  slotPrefab: {fileID: 114437474404965448, guid: dc39d3162d66c470fa525e646b286bee,
+    type: 3}
+  content: {fileID: 1224421009}
+  brokenDurabilityColor: {r: 1, g: 0, b: 0, a: 1}
+  lowDurabilityColor: {r: 1, g: 0, b: 1, a: 1}
+  lowDurabilityThreshold: 0.1
 --- !u!1 &1264296657
 GameObject:
   m_ObjectHideFlags: 0
@@ -92265,10 +92308,10 @@ RectTransform:
   m_Father: {fileID: 2061909128}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 3.6465979, y: -5}
-  m_SizeDelta: {x: 5.2931957, y: 10}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1526907258
 MonoBehaviour:
@@ -101518,7 +101561,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1695436342}
   - component: {fileID: 1695436344}
-  - component: {fileID: 1695436343}
+  - component: {fileID: 1695436345}
   m_Layer: 5
   m_Name: NFT_image
   m_TagString: Untagged
@@ -101546,7 +101589,15 @@ RectTransform:
   m_AnchoredPosition: {x: -187, y: 27}
   m_SizeDelta: {x: 174.5406, y: 231.92}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1695436343
+--- !u!222 &1695436344
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695436341}
+  m_CullTransparentMesh: 0
+--- !u!114 &1695436345
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101555,35 +101606,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1695436341}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 874feed8bc84f4a4bbca3d9fcf4150c9, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1695436344
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695436341}
-  m_CullTransparentMesh: 1
+  m_Texture: {fileID: 8400000, guid: 6e90ee2e1c49b4213bb3503fbc6ed2fe, type: 2}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!1 &1695813808
 GameObject:
   m_ObjectHideFlags: 0
@@ -104831,7 +104871,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 12.000244}
+  m_AnchoredPosition: {x: 0, y: 12.000305}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1748409325
@@ -108537,6 +108577,7 @@ MonoBehaviour:
   RegisterButton: {fileID: 1449114778}
   ConnectWalletButton: {fileID: 2006486022}
   nowCharacterName: {fileID: 1275495338}
+  uiSelectionTab: {fileID: 159557696}
   abihero: '[{"inputs":[{"internalType":"address","name":"_cCA","type":"address"},{"internalType":"address","name":"_cultureCoin","type":"address"},{"internalType":"address","name":"_nbt","type":"address"},{"internalType":"address","name":"_registryAddress","type":"address"},{"internalType":"address","name":"_baseSpells","type":"address"},{"internalType":"address","name":"_myItems","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"address","name":"from","type":"address"},{"indexed":false,"internalType":"uint256","name":"hId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"int256","name":"how","type":"int256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Bug","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"_who","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"what","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Casting","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"hId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"target","type":"uint256"},{"indexed":false,"internalType":"int256","name":"how","type":"int256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fizzleType","type":"uint256"}],"name":"Fizzle","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"string","name":"reason","type":"string"}],"name":"GasTokenSpent","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"userAddress","type":"address"},{"indexed":false,"internalType":"address
     payable","name":"relayerAddress","type":"address"},{"indexed":false,"internalType":"bytes","name":"functionSignature","type":"bytes"}],"name":"MetaTransactionExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"hId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":false,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"int256","name":"class","type":"int256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"NewHero","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"_who","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"what","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Uncasting","type":"event"},{"inputs":[],"name":"ERC712_VERSION","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_getNextTokenId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_incrementTokenId","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"addonBurn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_to","type":"address"}],"name":"addonMintTo","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"addonPay","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hp","type":"uint256"}],"name":"alive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseTokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_bugger","type":"address"},{"internalType":"uint256","name":"_hId","type":"uint256"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"int256","name":"_how","type":"int256"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"bug","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"string","name":"_reason","type":"string"}],"name":"burnGas","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"cCA","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hId","type":"uint256"},{"internalType":"int256","name":"_spell","type":"int256"}],"name":"canCast","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hId","type":"uint256"},{"internalType":"uint256","name":"_whatId","type":"uint256"}],"name":"castsOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"contractURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hId","type":"uint256"},{"internalType":"uint256","name":"_whatId","type":"uint256"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"doCast","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"},{"internalType":"bytes","name":"functionSignature","type":"bytes"},{"internalType":"bytes32","name":"sigR","type":"bytes32"},{"internalType":"bytes32","name":"sigS","type":"bytes32"},{"internalType":"uint8","name":"sigV","type":"uint8"}],"name":"executeMetaTransaction","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"uint256","name":"_gasRewards","type":"uint256"}],"name":"fillGasTank","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hId","type":"uint256"},{"internalType":"uint256","name":"_target","type":"uint256"},{"internalType":"int256","name":"_how","type":"int256"},{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"uint256","name":"_fizzleType","type":"uint256"}],"name":"fizzle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_addon","type":"address"}],"name":"getAddon","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getChainId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hId","type":"uint256"}],"name":"getClass","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_target","type":"uint256"}],"name":"getCurrentPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getCurrentToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getDefaultFrom","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getDefaultPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getDomainSeperator","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"getGasRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGasToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hId","type":"uint256"}],"name":"getHP","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_target","type":"uint256"}],"name":"getHPSumary","outputs":[{"components":[{"internalType":"uint256","name":"hp","type":"uint256"},{"internalType":"int256","name":"armor","type":"int256"},{"internalType":"int256","name":"fire","type":"int256"},{"internalType":"int256","name":"frost","type":"int256"},{"internalType":"int256","name":"meta","type":"int256"},{"internalType":"uint256","name":"effect","type":"uint256"}],"internalType":"struct
     HPSummary","name":"","type":"tuple"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_target","type":"uint256"}],"name":"getMaxHp","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getNBT","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getNonce","outputs":[{"internalType":"uint256","name":"nonce","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"getPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_reasonId","type":"uint256"}],"name":"getReason","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"getRewards","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getRoyalty","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_hId","type":"uint256"}],"name":"getSpawn","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_target","type":"uint256"}],"name":"getStats","outputs":[{"components":[{"internalType":"uint256","name":"intel","type":"uint256"},{"internalType":"uint256","name":"agi","type":"uint256"},{"internalType":"uint256","name":"strn","type":"uint256"},{"internalType":"uint256","name":"effect","type":"uint256"},{"components":[{"internalType":"uint256","name":"talent","type":"uint256"}],"internalType":"struct
@@ -120577,7 +120618,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0.9886364}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -123920,7 +123961,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 7.2931957, y: 10}
+  m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2061909129
 MonoBehaviour:

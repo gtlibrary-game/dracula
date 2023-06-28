@@ -450,7 +450,6 @@ public partial class Database : MonoBehaviour
         // as usual, we will use the simplest solution possible:
         // create account if not exists, compare password otherwise.
         // no CMS communication necessary and good enough for an Indie MMORPG.
-
         // not empty?
         if (!string.IsNullOrWhiteSpace(account) && !string.IsNullOrWhiteSpace(password))
         {
@@ -458,6 +457,7 @@ public partial class Database : MonoBehaviour
             // note: sqlite-net has no InsertOrIgnore so we do it in two steps
             if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=?", account) == null)
                 connection.Insert(new accounts{ name=account, password=password, created=DateTime.UtcNow, lastlogin=DateTime.Now, banned=false});
+            print(account);
 
             // check account name, password, banned status
             if (connection.FindWithQuery<accounts>("SELECT * FROM accounts WHERE name=? AND password=? and banned=0", account, password) != null)
@@ -673,17 +673,9 @@ public partial class Database : MonoBehaviour
 
     public bool IsOwnerOfHero(string characterName,string clientAccount)
     {
-        print("======IsOwnerOfHero========");
-        // print(characterName);
-        // print(clientAccount);
-        // // connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=? AND deleted=0", characterName);
-        // characters row = connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=? AND deleted=0", characterName);
-        // print(stats.name);
-        return false;
-        // if(row == null) return false;
-        // print(row.name);
-        // if(row.name == clientAccount) return true;
-        // else return false;
+        if(connection.FindWithQuery<characters>("SELECT * FROM characters WHERE name=? AND account=? AND deleted=0", characterName,clientAccount)!=null)
+        return true;
+        else return false;
 
     }
 

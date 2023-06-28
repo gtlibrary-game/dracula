@@ -15,8 +15,6 @@ public class UIHeroSelectionTab : MonoBehaviour
     Transform selected = null;
     public GameObject characterName;
     public Button MintButton;
-    public NetworkAuthenticatorMMO auth;
-    public NFTManager nftManager;
     public TextMeshProUGUI nameInput;
     public string currentCharacterName = null;
     void Start()
@@ -27,30 +25,28 @@ public class UIHeroSelectionTab : MonoBehaviour
         selecting = networkManagerObj.transform.GetChild(1);
         int index = selecting.GetSiblingIndex();
         DisplayCharacter(selecting);
-
-
         // mintButton.interactable = manager.IsAllowedCharacterName(nameInput.text);
-        MintButton.onClick.SetListener(async () => {
-            Contract contract = ThirdwebManager.Instance.SDK.GetContract(nftManager.conttAddress,nftManager.abihero);
-            var walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
-            var nowTokenId = await nftManager.getNextTokenId();
-            var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
+        // MintButton.onClick.SetListener(async () => {
+        //     Contract contract = ThirdwebManager.Instance.SDK.GetContract(nftManager.conttAddress,nftManager.abihero);
+        //     var walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+        //     var nowTokenId = await nftManager.getNextTokenId();
+        //     var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
 
-            // string characterName = auth.manager.charactersAvailableMsg.characters[auth.manager.selection].name;
-            // auth.manager.nowCharacterName = characterName;
-            print(currentCharacterName);
-            // print(auth.manager.selection);
-            HeroMintNFTMsg message = new HeroMintNFTMsg{
-                playFabId=auth.playFabId,
-                sessionTicket=auth.sessionTicket,
-                signedTicket=auth.signedTicket,
-                nowCharacterName=currentCharacterName,
-                heroId = nowTokenId.ToString()
-            }; //, signedTicket=signedTicket};
-            // HeroMintNFTMsg message = new HeroMintNFTMsg{account=characterName, password="hash", version=Application.version};
-            NetworkClient.connection.Send(message);
-            Debug.Log("HeroMintNFTMsg message was sent");
-        });
+        //     // string characterName = auth.manager.charactersAvailableMsg.characters[auth.manager.selection].name;
+        //     // auth.manager.nowCharacterName = characterName;
+        //     print(currentCharacterName);
+        //     // print(auth.manager.selection);
+        //     HeroMintNFTMsg message = new HeroMintNFTMsg{
+        //         playFabId=auth.playFabId,
+        //         sessionTicket=auth.sessionTicket,
+        //         signedTicket=auth.signedTicket,
+        //         nowCharacterName=currentCharacterName,
+        //         heroId = nowTokenId.ToString()
+        //     }; //, signedTicket=signedTicket};
+        //     // HeroMintNFTMsg message = new HeroMintNFTMsg{account=characterName, password="hash", version=Application.version};
+        //     NetworkClient.connection.Send(message);
+        //     Debug.Log("HeroMintNFTMsg message was sent");
+        // });
     }
 
     void DisplayCharacter(Transform trnsobj){

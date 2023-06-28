@@ -29,6 +29,7 @@ public class NFTManager : MonoBehaviour
     public GameObject RegisterButton;
     public GameObject ConnectWalletButton;
     public TextMeshProUGUI nowCharacterName;
+    public UIHeroSelectionTab uiSelectionTab;
     Dictionary<string, int> classValues = new Dictionary<string, int>
     {
         {"Warrior", 15},
@@ -53,7 +54,7 @@ public class NFTManager : MonoBehaviour
             RegisterButton.SetActive(false);
         }
     }
-    public async void IsConnectedWallet(){
+    public async Task IsConnectedWallet(){
         var data = await ThirdwebManager.Instance.SDK.wallet.IsConnected();
         if(data){
             walletFlg = true;
@@ -72,7 +73,7 @@ public class NFTManager : MonoBehaviour
 
     public async void onWalletConnected()
     {
-        
+        await auth.SignAndSendTicket();
         walletFlg = true;
         
     }
@@ -111,10 +112,6 @@ public class NFTManager : MonoBehaviour
         Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
         await contract.ERC721.Burn(i);
     }
-
-    public async void OnSignAndSendTicket(){
-        // print("OnSignAndSendTicket");
-    }
     public async void getAllNFTs()
     {
         // progressText.text = "Listing NFTs, please wait...";
@@ -128,6 +125,35 @@ public class NFTManager : MonoBehaviour
         // }
         // progressText.text = "Listing Completed!";
         // getTraits(traits.Agility);
+    }
+
+    async public void heroMint(){
+        string characName = uiSelectionTab.currentCharacterName;
+        Player player = Player.localPlayer;
+        if (player != null)
+        {
+            characName = player.name;
+        }
+
+        await IsConnectedWallet();
+        
+        Contract contract = ThirdwebManager.Instance.SDK.GetContract(conttAddress,abihero);
+        var walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
+        var nowTokenId = await getNextTokenId();
+        var resultMint = await contract.Write("heroMint","1",walletAddress,"15","1000000000000000000");
+        // string characterName = auth.manager.charactersAvailableMsg.characters[auth.manager.selection].name;
+        // auth.manager.nowCharacterName = characterName;
+        print(characName);
+        // print(auth.manager.selection);
+        HeroMintNFTMsg message = new HeroMintNFTMsg{
+            playFabId=auth.playFabId,
+            sessionTicket=auth.sessionTicket,
+            signedTicket=auth.signedTicket,
+            nowCharacterName = characName,
+            heroId = nowTokenId.ToString()
+        }; //, signedTicket=signedTicket};
+        NetworkClient.connection.Send(message);
+        Debug.Log("HeroMintNFTMsg message was sent");
     }
 
     public void getAllcontracts()

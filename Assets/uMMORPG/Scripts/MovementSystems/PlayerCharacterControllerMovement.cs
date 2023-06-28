@@ -1511,7 +1511,7 @@ public class PlayerCharacterControllerMovement : Movement
                 UIWindow.currentlyDragged == null &&
                 distance > 0)
             {
-                print("====Left===");
+                // print("====Left===");
                 // we are rotating with a mouse
                 rotatingWithMouse = true;
 
@@ -1527,8 +1527,8 @@ public class PlayerCharacterControllerMovement : Movement
             else
             { 
 
-                 print(Input.GetMouseButton(mouseFreeLookButton) + ":"+ !Input.GetMouseButton(notFreeLookButton));
-                print("====right===");
+                // print(Input.GetMouseButton(mouseFreeLookButton) + ":"+ !Input.GetMouseButton(notFreeLookButton));
+                // print("====right===");
                 // set to player parent no matter what. this is important to do
                 // in any case when not free looking, otherwise the free look
                 // rotation never resets
@@ -1552,8 +1552,8 @@ public class PlayerCharacterControllerMovement : Movement
 
 
         }
-
         // lock cursor, or free cursor in any case
+        mouseRotationLocksCursor = false;
         if (mouseRotationLocksCursor)
         {
             // are we rotating with the mouse?

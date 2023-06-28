@@ -52,7 +52,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public UnityEvent OnSignedClientCallback;
     public UnityEvent OnFailedSignClientCallback;
 
-    public async void SignAndSendTicket() {
+    public async Task SignAndSendTicket() {
         print("===========SignAndSendTicket==========");
         try{
             string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
@@ -117,6 +117,8 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             // ClientWalletSign = ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
             // signedTicketTask.Wait();
             // signedTicket = signedTicketTask.Result;
+
+            // OnStartClientAfterPlayFab
             OnSignedClientCallback?.Invoke();
         }
         catch (Exception e)
@@ -132,7 +134,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             // var signResult = await ClientWalletSign;
             // print(signResult);
             manager.StartClient();
-            OnClientAuthenticate();
+            // OnClientAuthenticate();
         }
         catch (Exception e)
         {
@@ -183,6 +185,9 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
         // Application.version can be modified under:
         // Edit -> Project Settings -> Player -> Bundle Version
         string hash = Utils.PBKDF2Hash(loginPassword, passwordSalt + loginAccount);
+        // -------------------------Develop mode-----------------------//
+        // LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version};
+        //--------------------------------------------------------------//
         LoginMsg message = new LoginMsg{account=loginAccount, password=hash, version=Application.version, playFabId=playFabId, sessionTicket=sessionTicket}; //, signedTicket=signedTicket};
         NetworkClient.connection.Send(message);
         Debug.Log("login message was sent");
@@ -193,7 +198,9 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     void OnClientLoginSuccess(LoginSuccessMsg msg)
     {
+        //------- Production mode----------//
         SignAndSendTicket();
+        //---------------------------------//
         // authenticated successfully. OnClientConnected will be called.
         OnClientAuthenticated.Invoke();
     }
@@ -233,6 +240,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     // server //////////////////////////////////////////////////////////////////
     public override void OnStartServer()
     {
+        // StartHost3
         // register login message, allowed before authenticated
         NetworkServer.RegisterHandler<LoginMsg>(OnServerLogin, false);
         NetworkServer.RegisterHandler<SignTicketMsg>(OnSignTicket, false);
@@ -361,6 +369,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                 // validate account info
                 if (Database.singleton.TryLogin(message.account, "message.password")) // Always true because we are using playfab to check the passwords. --JRR
                 {
+                    print("not in lobby and not in world yet?");
                     // not in lobby and not in world yet?
                     if (!AccountLoggedIn(message.account))
                     {
@@ -372,35 +381,36 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
             	            SessionTicket = message.sessionTicket
         	            };
                         
+                        //----------------------------Production mode----------------------------------//
                         ticketToConn[message.playFabId] = conn;
                         playFabIdToTicket[message.playFabId] = message.sessionTicket;
                         PlayFabServerAPI.AuthenticateSessionTicket(request, OnAuthenticateSessionTicket, OnError , conn);
-
+                        //------------------------------------------------------------------------------//
                         // login successful
-                        //Debug.Log("login successful: " + message.account);
+                        Debug.Log("login successful: " + message.account);
 
-                        //Debug.Log("result.IsSessionTicketExpired: " + result.IsSessionTicketExpired);
+                        // Debug.Log("result.IsSessionTicketExpired: " + result.IsSessionTicketExpired);
                         
 
                         // login successful
-                        //Debug.Log("login successful: " + message.account);
+                        Debug.Log("login successful: " + message.account);
 
                         // notify client about successful login. otherwise it
                         // won't accept any further messages.
-                        //conn.Send(new LoginSuccessMsg());
-
+                        //----------------------------Development Mode----------------------------------//
+                        conn.Send(new LoginSuccessMsg());
                         // authenticate on server
-                        //OnServerAuthenticated.Invoke(conn);
+                        OnServerAuthenticated.Invoke(conn);
+                        //------------------------------------------------------------------------------//
                     }
                     else
                     {
                         Debug.Log("account already logged in: " + message.account);
                         manager.ServerSendError(conn, "already logged in", true);
-
                         // note: we should disconnect the client here, but we can't as
                         // long as unity has no "SendAllAndThenDisconnect" function,
                         // because then the error message would never be sent.
-                        //conn.Disconnect();
+                        conn.Disconnect();
                     }
                 }
             }

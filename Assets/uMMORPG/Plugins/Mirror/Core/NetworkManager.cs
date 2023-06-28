@@ -266,12 +266,13 @@ namespace Mirror
         // full server setup code, without spawning objects yet
         void SetupServer()
         {
-            // Debug.Log("NetworkManager SetupServer");
+            // StartHost2
+            Debug.Log("NetworkManager SetupServer");
             InitializeSingleton();
 
             if (runInBackground)
                 Application.runInBackground = true;
-
+            
             if (authenticator != null)
             {
                 authenticator.OnStartServer();
@@ -410,6 +411,7 @@ namespace Mirror
         /// <summary>Starts a network "host" - a server and client in the same application.</summary>
         public void StartHost()
         {
+            // StartHost1
             if (NetworkServer.active || NetworkClient.active)
             {
                 Debug.LogWarning("Server or Client already started.");
@@ -455,7 +457,9 @@ namespace Mirror
             // otherwise call FinishStartHost directly
             else
             {
-                FinishStartHost();
+                // //---- Development mode--------------//
+                // FinishStartHost();
+                // //-----------------------------------//
             }
         }
 
@@ -1078,7 +1082,8 @@ namespace Mirror
 
         void OnServerConnectInternal(NetworkConnectionToClient conn)
         {
-            //Debug.Log("NetworkManager.OnServerConnectInternal");
+            // StartHost4
+            Debug.Log("NetworkManager.OnServerConnectInternal");
 
             if (authenticator != null)
             {
@@ -1096,7 +1101,7 @@ namespace Mirror
         // TODO do the NetworkServer.OnAuthenticated thing from x branch
         void OnServerAuthenticated(NetworkConnectionToClient conn)
         {
-            //Debug.Log("NetworkManager.OnServerAuthenticated");
+            Debug.Log("NetworkManager.OnServerAuthenticated");
 
             // set connection to authenticated
             conn.isAuthenticated = true;
@@ -1152,7 +1157,7 @@ namespace Mirror
             if (authenticator != null)
             {
                 // we have an authenticator - let it handle authentication
-                // authenticator.OnClientAuthenticate();
+                authenticator.OnClientAuthenticate();
             }
             else
             {

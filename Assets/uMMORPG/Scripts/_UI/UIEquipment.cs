@@ -26,11 +26,11 @@ public partial class UIEquipment : MonoBehaviour
 
             // only enable avatar camera while panel is active.
             // no need to render while the window is hidden!
-            ((PlayerEquipment)player.equipment).avatarCamera.enabled = panel.activeSelf;
             // only update the panel if it's active
            
             if (panel.activeSelf)
             {
+                ((PlayerEquipment)player.equipment).avatarCamera.enabled = panel.activeSelf;
                 // instantiate/destroy enough slots
                 UIUtils.BalancePrefabs(slotPrefab.gameObject, player.equipment.slots.Count, content);
 

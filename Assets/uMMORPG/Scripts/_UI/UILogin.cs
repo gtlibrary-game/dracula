@@ -60,9 +60,7 @@ public partial class UILogin : MonoBehaviour
         // trying to login and waiting for the server's response
         if (manager.state == NetworkState.Offline || manager.state == NetworkState.Handshake)
         {
-            
             panel.SetActive(true);
-
             // status
             if (NetworkClient.isConnecting)
                 statusText.text = "Connecting...";
@@ -70,7 +68,6 @@ public partial class UILogin : MonoBehaviour
                 statusText.text = "Handshake...";
             else
                 statusText.text = "";
-
             // buttons. interactable while network is not active
             // (using IsConnecting is slightly delayed and would allow multiple clicks)
             registerButton.interactable = !manager.isNetworkActive;
@@ -82,10 +79,9 @@ public partial class UILogin : MonoBehaviour
             resetPasswordButton.onClick.SetListener(() => { auth.ResetPassword(); });
             loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             // loginButton.interactable = !manager.isNetworkActive && auth.IsAllowedAccountName(userNameInput.text);
-            loginButton.interactable = nftManager.walletFlg;
+            // loginButton.interactable = nftManager.walletFlg;
             loginButton.onClick.SetListener(() => {
                 // auth.LoginFlg = true;
-                
                 auth.LoginUser();
             });
 
@@ -103,9 +99,9 @@ public partial class UILogin : MonoBehaviour
 
             
 
+            // hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
             hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
-            hostButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive && auth.IsAllowedAccountName(accountInput.text);
-            hostButton.onClick.SetListener(() => { manager.StartHost(); });
+            hostButton.onClick.SetListener(() => { manager.StartServer(); });
             cancelButton.gameObject.SetActive(NetworkClient.isConnecting);
             cancelButton.onClick.SetListener(() => { manager.StopClient(); });
             dedicatedButton.interactable = Application.platform != RuntimePlatform.WebGLPlayer && !manager.isNetworkActive;
