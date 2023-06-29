@@ -53,14 +53,15 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public UnityEvent OnFailedSignClientCallback;
 
 
-    public async void SignAndSendTicket() {
+    public async Task SignAndSendTicket() {
         print("===========SignAndSendTicket=========="+signedTicket);
+        print(nftManager.mintButtonFlg);
         // try{
                 
         //     if(signedTicket == null)
         //     {
         // print(nftManager.mintButtonFlg);
-        if(nftManager.mintButtonFlg == true){
+        // if(nftManager.mintButtonFlg == true){
                 string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
                 signedTicket = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
                 SignTicketMsg message = new SignTicketMsg {
@@ -70,7 +71,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                     signedTicket=signedTicket,
                 };
                 NetworkClient.connection.Send(message);
-        }
+        // }
         //     }
         // }catch(Exception e){
         //     Debug.LogWarning($"Error SignAndSendTicket: {e}");

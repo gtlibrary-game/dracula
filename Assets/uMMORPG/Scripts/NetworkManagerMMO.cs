@@ -433,7 +433,7 @@ public partial class NetworkManagerMMO : NetworkManager
 
     async void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
     {
-            print("auth.playFabIdToAccount[message.playFabId]");
+            
         if (lobby.ContainsKey(conn) || auth.playFabIdToAccount.ContainsKey(message.playFabId))
         {
             print(auth.playFabIdToAccount[message.playFabId]);
