@@ -134,7 +134,6 @@ public class NFTManager : MonoBehaviour
         print("data:"+data);
         print("mintButtonFlg:"+mintButtonFlg);
         if(data){
-        
             string characName = uiSelectionTab.currentCharacterName;
             Player player = Player.localPlayer;
             if (player != null)

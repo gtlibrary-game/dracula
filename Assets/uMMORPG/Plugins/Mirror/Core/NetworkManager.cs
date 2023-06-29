@@ -1109,6 +1109,7 @@ namespace Mirror
             // proceed with the login handshake by calling OnServerConnect
             if (networkSceneName != "" && networkSceneName != offlineScene)
             {
+                 Debug.Log("NetworkManager.OnServerAuthenticated.networkSceneName");
                 SceneMessage msg = new SceneMessage()
                 {
                     sceneName = networkSceneName

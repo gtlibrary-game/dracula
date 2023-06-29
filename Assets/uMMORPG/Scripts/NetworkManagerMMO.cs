@@ -433,15 +433,19 @@ public partial class NetworkManagerMMO : NetworkManager
 
     async void OnServerHeroMintNFT(NetworkConnectionToClient conn, HeroMintNFTMsg message)
     {
-        print(auth.playFabIdToAccount[message.playFabId]);
+            print("auth.playFabIdToAccount[message.playFabId]");
         if (lobby.ContainsKey(conn) || auth.playFabIdToAccount.ContainsKey(message.playFabId))
         {
+            print(auth.playFabIdToAccount[message.playFabId]);
             // read the index and find the n-th character
             // (only if we know that he is not ingame, otherwise lobby has
             //  no netMsg.conn key)
             string account = null;
             if(lobby.ContainsKey(conn)) account = lobby[conn];
             if(auth.playFabIdToAccount.ContainsKey(message.playFabId)) account = auth.playFabIdToAccount[message.playFabId];
+
+            print(account);
+            print(message.nowCharacterName);
 
             int myCharacter = 0;
             if(Database.singleton.IsOwnerOfHero(message.nowCharacterName,account))

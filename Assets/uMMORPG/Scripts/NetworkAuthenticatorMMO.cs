@@ -33,7 +33,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
     [Header("Components")]
     public NetworkManagerMMO manager;
-
+    public NFTManager nftManager;
     // login info for the local player
     // we don't just name it 'account' to avoid collisions in handshake
     [Header("Login")]
@@ -52,12 +52,15 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public UnityEvent OnSignedClientCallback;
     public UnityEvent OnFailedSignClientCallback;
 
+
     public async void SignAndSendTicket() {
         print("===========SignAndSendTicket=========="+signedTicket);
         // try{
                 
         //     if(signedTicket == null)
         //     {
+        // print(nftManager.mintButtonFlg);
+        if(nftManager.mintButtonFlg == true){
                 string walletAddress = await ThirdwebManager.Instance.SDK.wallet.GetAddress();
                 signedTicket = await ThirdwebManager.Instance.SDK.wallet.Sign(sessionTicket);
                 SignTicketMsg message = new SignTicketMsg {
@@ -67,6 +70,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                     signedTicket=signedTicket,
                 };
                 NetworkClient.connection.Send(message);
+        }
         //     }
         // }catch(Exception e){
         //     Debug.LogWarning($"Error SignAndSendTicket: {e}");
@@ -132,6 +136,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     public async void OnStartClientAfterPlayFab(){
         try{
+            print("==========OnStartClientAfterPlayFab=========");
             // var signResult = await ClientWalletSign;
             // print(signResult);
             manager.StartClient();
@@ -199,6 +204,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
 
     void OnClientLoginSuccess(LoginSuccessMsg msg)
     {
+        print("==========OnClientLoginSuccess===========");
         //------- Production mode----------//
         // SignAndSendTicket();
         //---------------------------------//
@@ -270,8 +276,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     bool AccountLoggedIn(string account)
     {
         // in lobby or in world?
-        return manager.lobby.ContainsValue(account) ||
-               Player.onlinePlayers.Values.Any(p => p.account == account);
+        return manager.lobby.ContainsValue(account) || Player.onlinePlayers.Values.Any(p => p.account == account);
     }
 
     void OnServerRegister(NetworkConnectionToClient conn, RegisterMsg message)
@@ -369,10 +374,12 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                 // validate account info
                 if (Database.singleton.TryLogin(message.account, "message.password")) // Always true because we are using playfab to check the passwords. --JRR
                 {
-                    print("not in lobby and not in world yet?");
+       
                     // not in lobby and not in world yet?
                     if (!AccountLoggedIn(message.account))
                     {
+
+                        print("=======if (!AccountLoggedIn(message.account))======");
                         // add to logged in accounts
                         manager.lobby[conn] = message.account;
 
@@ -390,17 +397,13 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                         Debug.Log("login successful: " + message.account);
 
                         // Debug.Log("result.IsSessionTicketExpired: " + result.IsSessionTicketExpired);
-                        
-
-                        // login successful
-                        Debug.Log("login successful: " + message.account);
 
                         // notify client about successful login. otherwise it
                         // won't accept any further messages.
                         //----------------------------Development Mode----------------------------------//
-                        conn.Send(new LoginSuccessMsg());
+                        // conn.Send(new LoginSuccessMsg());
                         // authenticate on server
-                        OnServerAuthenticated.Invoke(conn);
+                        // OnServerAuthenticated.Invoke(conn);
                         //------------------------------------------------------------------------------//
                     }
                     else
