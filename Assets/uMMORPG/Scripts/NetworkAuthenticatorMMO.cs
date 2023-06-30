@@ -13,6 +13,17 @@ using MoonSharp.Interpreter;
 using OpenAI;
 using System.Net.Http;
 
+    [Serializable]
+    public struct FromChatWrapper {
+        public FromChat content;
+        public string type;
+    };
+    [Serializable]
+    public struct FromChat {
+        public string role;
+        public string content;
+    };
+
 public class NetworkAuthenticatorMMO : NetworkAuthenticator
 {
     [Header("Components")]
@@ -32,16 +43,7 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
     public string signedTicket;
 
 
-    [Serializable]
-    public struct FromChatWrapper {
-        public FromChat content;
-        public string type;
-    };
-    [Serializable]
-    public struct FromChat {
-        public string role;
-        public string content;
-    };
+
     public async void LoadScripts() {
 
         //Debug.Log("In Load Scripts");

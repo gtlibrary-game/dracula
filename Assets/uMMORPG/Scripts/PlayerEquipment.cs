@@ -313,11 +313,14 @@ public class PlayerEquipment : Equipment
             slots[weaponIndex] = slot;
         }
 
+/*
         for (int i = 0; i < slots.Count; ++i) {
             PlayLuaScriptOnDamageDealtTo(slots[i], victim);
         }
+*/
     }
 
+/*
     private int inOnDamageDealtTo = 0;
     void PlayLuaScriptOnDamageDealtTo(ItemSlot itemSlot, Entity victim){
         if(inOnDamageDealtTo > 3) {         // Limit all cascades to 3 levels.
@@ -335,6 +338,7 @@ public class PlayerEquipment : Equipment
 
         inOnDamageDealtTo -= 1;
     }
+    */
 
     public void OnReceivedDamage(Entity attacker, int damage)
     {

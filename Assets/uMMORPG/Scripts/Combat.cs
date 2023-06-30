@@ -153,7 +153,7 @@ public class Combat : NetworkBehaviour
 
     public async void DoUniqueDamage(int depth, CombatState1 state1, Entity caster, Entity victim) {
         // Pass state1 into the script for each unique item.
-        caster.equipment.RunOnDamageScripts(depth, state1, caster, victim);
+        caster.equipment.RunOnDoDamageScripts(depth, state1, caster, victim);
     }
 
     // combat //////////////////////////////////////////////////////////////////
@@ -162,9 +162,10 @@ public class Combat : NetworkBehaviour
     [Server]
     public virtual void DealDamageAt(int depth, int skillid, Entity caster, Entity victim, int amount, float stunChance=0, float stunTime=0)
     {
-        if(depth >=2) {
+        if(depth >=2) { // Keep crazy chains from happening
             return;
         }
+
         Combat victimCombat = victim.combat;
         int damageDealt = 0; // FIXME: This is function of caster and skill id and not a function of amount.
         DamageType damageType = DamageType.Normal; // This is also a function of skill and caster.
@@ -176,7 +177,9 @@ public class Combat : NetworkBehaviour
             caster_damageout = actualAmount, 
             caster_level = caster.level.current,
             caster_health = caster.health.baseHealth.Get(caster.level.current),
+            caster_maxhealth = caster.health.max,
             caster_mana = caster.mana.baseMana.Get(caster.level.current),
+            caster_maxmana = caster.mana.max,
             caster_runspeed = caster.speed,
             caster_lastcombat = NetworkTime.time - caster.lastCombatTime,
 
@@ -186,7 +189,9 @@ public class Combat : NetworkBehaviour
 
             victim_level = victim.level.current,
             victim_health = victim.health.baseHealth.Get(victim.level.current),
+            victim_maxhealth = victim.health.max,
             victim_mana = victim.mana.baseMana.Get(victim.level.current),
+            victim_maxmana = victim.mana.max,
             victim_runspeed = victim.speed,
             victim_lastcombat = NetworkTime.time - victim.lastCombatTime,
 
@@ -198,6 +203,7 @@ public class Combat : NetworkBehaviour
         Debug.Log("state1: " + state1);
 
         DoUniqueDamage(depth, state1, caster, victim);
+        depth += 1;
 
         // don't deal any damage if entity is invincible
         if (!victimCombat.invincible)

@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using MoonSharp.Interpreter;
+using Mirror;
 
     
 public class CombatState2 {
@@ -22,7 +24,7 @@ public class CombatState2 {
         public float buff_block_seconds;
 
         public float buff_crit_chance;
-        public float buff_crit_chanse_seconds;
+        public float buff_crit_chance_seconds;
 
         public float buff_speed;
         public float buff_speed_seconds;
@@ -31,96 +33,166 @@ public class CombatState2 {
         public float secondary_skillchance;
 }
 
+public struct DamageEffects {
+    public float added_damageout;
+    public float added_selfheal;
+
+    public float buff_mana;
+    public float buff_mana_seconds;
+ 
+    public float buff_crit_chance;
+    public float buff_crit_chance_seconds;
+
+ 
+    public int[] second_skills;
+    public float[] second_skill_chances;
+
+    public DamageEffects (int items) {
+        added_damageout = 0;
+        added_selfheal = 0;
+
+        buff_mana = 0;
+        buff_mana_seconds = 0;
+
+        // FIXME: Add the rest of the options here...
+
+        buff_crit_chance = 0;
+        buff_crit_chance_seconds = 0;
+
+        second_skills = new int[items];
+        second_skill_chances = new float[items];
+    }
+}
+
 [DisallowMultipleComponent]
 public abstract class Equipment : ItemContainer, IHealthBonus, IManaBonus, ICombatBonus
 {
 
+    public int AccumulateDamageEffects(int slotid, DamageEffects effects, Item item, CombatState1 state1, CombatState2 state2, Entity caster, Entity victim) {
+        Debug.Log("In AccumulateDamageEffects()");
+
+        effects.added_damageout += state2.added_damageout;
+        effects.added_selfheal += state2.added_selfheal;
+
+        // FIXME: Need to handle all the different output states in state2 and do them
+
+        effects.buff_crit_chance += state2.buff_crit_chance;
+        effects.buff_crit_chance_seconds += state2.buff_crit_chance_seconds;
+
+        effects.second_skills[slotid] = state2.secondary_skill;
+        effects.second_skill_chances[slotid] = state2.secondary_skillchance;
+
+        return 0;
+    }
+    
+    
+    public void RunDamageEffects(int depth, CombatState1 state1, DamageEffects damageEffects, Entity caster, Entity victim) {
+        Combat victimCombat = victim.combat;
+        DamageType damageType = DamageType.Normal;
+        float damageDealt = 0; 
+
+        // float depthDamageMult[] = {0.90F, 0.40F, 0.10F};    // Effects always get less powerful in general.
+
+        // Get info about skill
+
+        float actualAmount = damageEffects.added_damageout;
+        float criticalChance = damageEffects.buff_crit_chance;
+
+        if (!victimCombat.invincible)
+        {
+            // block? (we use < not <= so that block rate 0 never blocks)
+            if (UnityEngine.Random.value < victimCombat.blockChance)
+            {
+                damageType = DamageType.Block;
+            }
+            // deal damage
+            else
+            {
+                // subtract defense (but leave at least 1 damage, otherwise
+                // it may be frustrating for weaker players)
+                damageDealt = Mathf.Max(actualAmount - victimCombat.defense, 1);
+
+                // critical hit?`
+                if (UnityEngine.Random.value < criticalChance)
+                {
+                    damageDealt *= 2;
+                    damageType = DamageType.Crit;
+                }
+
+                // deal the damage
+                victim.health.current -= (int)damageDealt;
+
+                // call OnServerReceivedDamage event on the target
+                // -> can be used for monsters to pull aggro
+                // -> can be used by equipment to decrease durability etc.
+                victimCombat.onServerReceivedDamage.Invoke(caster.combat.entity, (int)damageDealt);
+
+                // stun?
+                /*
+                if (UnityEngine.Random.value < stunChance)
+                {
+                    // dont allow a short stun to overwrite a long stun
+                    // => if a player is hit with a 10s stun, immediately
+                    //    followed by a 1s stun, we don't want it to end in 1s!
+                    double newStunEndTime = NetworkTime.time + stunTime;
+                    victim.stunTimeEnd = Math.Max(newStunEndTime, entity.stunTimeEnd);
+                }
+                */
+            }
+
+            // call OnDamageDealtTo / OnKilledEnemy events
+            caster.combat.onDamageDealtTo.Invoke(victim);
+            if (victim.health.current == 0)
+                caster.combat.onKilledEnemy.Invoke(victim);
+        }
+
+        // let's make sure to pull aggro in any case so that archers
+        // are still attacked if they are outside of the aggro range
+        victim.OnAggro(caster.combat.entity);
+
+        // show effects on clients
+        victimCombat.RpcOnReceivedDamaged((int)damageDealt, damageType);
+
+        // reset last combat time for both
+        caster.combat.entity.lastCombatTime = NetworkTime.time;
+        victim.lastCombatTime = NetworkTime.time;
+
+        // FIXME: Need to add in other effects... --JRR
+
+        foreach(int skillid in damageEffects.second_skills) {
+            caster.combat.DealDamageAt(depth, skillid, caster, victim, 0, 0, 0);
+        }
+    }
 
     // Run down the user's equipment and call the damage scripts for each item.
-    public void RunOnDamageScripts(int depth, CombatState1 state1, Entity caster, Entity victim) {
+    public void RunOnDoDamageScripts(int depth, CombatState1 state1, Entity caster, Entity victim) {
+
+        DamageEffects damageEffects = new DamageEffects(slots.Count);
+
         foreach (ItemSlot slot in slots) {
             if (slot.item.data is EquipmentItem) {
                 Item item = slot.item;
 
-                //string scriptText = item.luaScriptOnDamageDealtTo;
-                string scriptText = @"
-                function OnDoDamage(quality)  -- Quality comes from the item itself: 0 or junk, 1, 2, or 3, 4 = corrupt
-
-                    caster_skillid = input.caster_skillid
-                    caster_damageout = input.caster_damage
-
-                    caster_level = inout.caster_level
-                    caster_health = input.caster_health
-                    caster_maxhealth = input.caster_maxhealth
-                    caster_mana = input.caster_mana
-                    caster_maxmana = input.caster_maxmana
-                    caster_runspeed = input.caster_runspeed
-                    caster_lastcombat = input.caster_lastcombat
-
-                    caster_defense = input.caster_defense
-                    caster_block = input.caster_block
-                    caster_crit = input.caster_crit
-
-                    victim_level = input.victim_level
-                    victim_health = input.victim.health
-                    victim_maxhealth = input.victim.health
-                    victim_mana = input.victim_mana
-                    victim_maxmana = input.victim_maxmana
-                    victim_runspeed = input.victim_runspeed
-                    victim_lastcombat = input.victim_lastcombat
-        
-                    victim_defense = input.victim_defense
-                    victim_block = input.victim_block
-                    victim_crit = input.victim_crit
-
-                    -- Convert the inputs into outputs using AI
-
-                    out.added_damageout = 0
-                    out.added_selfheal = 0
-
-                    out.buff_maxmana = 0
-                    out.buff_maxmana_seconds = 0
-
-                    out.buff_maxhealth = 0
-                    out.buff_maxhealth_seconds = 0
-
-                    out.area_damageout = 0
-                    out.area_effectyards = 0
-
-                    out.buff_defense = 0
-                    out.buff_defense_seconds = 0
-
-                    out.buff_block = 0;
-                    out.buff_block_seconds = 0;
-
-                    out.buff_crit = 0
-                    out.buff_crit_seconds = 0
-
-                    out.buff_runspeed = 0
-                    out.buff_runspeed_seconds = 0
-
-                    out.secondary_skill = 0;
-                    out.secondary_skillchance = 0;
-
-                end
-                ";
+                string scriptText = item.luaScriptOnDoDamage;
 
                 Script script = new Script();
                 script.DoString(scriptText);
 
-                script.Globals["state1"] = state1;
+                script.Globals["input"] = state1;
                 script.Globals["caster"] = caster;
                 script.Globals["victim"] = victim;
+                script.Globals["item"] = item;
 
                 script.Globals["out"] = new CombatState2{};
+                script.Globals["effects"] = damageEffects;      // This accumulated the effects from all items
+                script.Globals["slotid"] = damageEffects;      // This accumulated the effects from all items
 
-                script.Call(script.Globals["OnDoDamage"], 4);   // Always corrupt items for now...
+                script.Globals["doit"] = (Func<int, DamageEffects, Item, CombatState1, CombatState2, Entity, Entity, int>)AccumulateDamageEffects;
 
-                Debug.Log(script.Globals["out"]);
-
-                // Now to implement each of these effects.
             }
         }
+
+        RunDamageEffects(depth, state1, damageEffects, caster, victim);
     }
 
     // boni ////////////////////////////////////////////////////////////////////
