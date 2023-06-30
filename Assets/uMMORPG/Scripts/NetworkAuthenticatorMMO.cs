@@ -55,7 +55,6 @@ public class NetworkAuthenticatorMMO : NetworkAuthenticator
                 { new StringContent("True"), "return_json" },
                 { new StringContent("I write moonsharp lua code."), "context" },
                 { new StringContent("Hello computer."), "user_input" },
-                //{ new StringContent(modelId), "modelids" },
                 //{ new StringContent(message1), "message1" },
                 //{ new StringContent(message2), "message2" }
             };

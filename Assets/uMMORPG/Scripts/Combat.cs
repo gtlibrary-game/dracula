@@ -6,6 +6,37 @@ using UnityEngine.Events;
 
 public enum DamageType { Normal, Block, Crit }
 
+    public struct CombatState1 {
+        public int caster_skillid;
+        public int caster_damageout;
+
+        public int caster_level;
+        public int caster_health;
+        public int caster_maxhealth;
+        public int caster_mana;
+        public int caster_maxmana;
+        public float caster_runspeed;
+        public double caster_lastcombat;
+
+        public int caster_defense;
+        public float caster_block;
+        public float caster_crit;
+
+
+        public int victim_level;
+        public int victim_health;
+        public int victim_maxhealth;
+        public int victim_mana;
+        public int victim_maxmana;
+        public float victim_runspeed;
+        public double victim_lastcombat;
+        
+        public int victim_defense;
+        public float victim_block;
+        public float victim_crit;
+    }
+
+
 // inventory, attributes etc. can influence max health
 public interface ICombatBonus
 {
@@ -101,15 +132,72 @@ public class Combat : NetworkBehaviour
         }
     }
 
+    public int SkillDatabase_getDamage(int skillid, Entity caster, int clientAmount) {
+        int digitalAmount = clientAmount;
+
+        if(0 == skillid) {
+            // Effectively automatic shot
+            // Fixme:
+            // Damage needs to be a function of 
+            digitalAmount += 4;                     // Create imbalance towards melee
+        }
+
+        if(1 == skillid) {
+            // White damage/ auto attack 
+            digitalAmount += 5;                     // With higher damage than ranged attack
+        }
+
+        return digitalAmount;
+    }
+
+
+    public async void DoUniqueDamage(int depth, CombatState1 state1, Entity caster, Entity victim) {
+        // Pass state1 into the script for each unique item.
+        caster.equipment.RunOnDamageScripts(depth, state1, caster, victim);
+    }
+
     // combat //////////////////////////////////////////////////////////////////
     // deal damage at another entity
     // (can be overwritten for players etc. that need custom functionality)
     [Server]
-    public virtual void DealDamageAt(Entity victim, int amount, float stunChance=0, float stunTime=0)
+    public virtual void DealDamageAt(int depth, int skillid, Entity caster, Entity victim, int amount, float stunChance=0, float stunTime=0)
     {
+        if(depth >=2) {
+            return;
+        }
         Combat victimCombat = victim.combat;
-        int damageDealt = 0;
-        DamageType damageType = DamageType.Normal;
+        int damageDealt = 0; // FIXME: This is function of caster and skill id and not a function of amount.
+        DamageType damageType = DamageType.Normal; // This is also a function of skill and caster.
+
+        int actualAmount = SkillDatabase_getDamage(skillid, caster, amount);
+
+        CombatState1 state1 = new CombatState1 {
+            caster_skillid = skillid,
+            caster_damageout = actualAmount, 
+            caster_level = caster.level.current,
+            caster_health = caster.health.baseHealth.Get(caster.level.current),
+            caster_mana = caster.mana.baseMana.Get(caster.level.current),
+            caster_runspeed = caster.speed,
+            caster_lastcombat = NetworkTime.time - caster.lastCombatTime,
+
+            caster_defense =  defense,
+            caster_block =  blockChance,
+            caster_crit =  criticalChance,
+
+            victim_level = victim.level.current,
+            victim_health = victim.health.baseHealth.Get(victim.level.current),
+            victim_mana = victim.mana.baseMana.Get(victim.level.current),
+            victim_runspeed = victim.speed,
+            victim_lastcombat = NetworkTime.time - victim.lastCombatTime,
+
+            victim_defense = victimCombat.defense,
+            victim_block = victimCombat.blockChance,
+            victim_crit = victimCombat.criticalChance,
+        };
+
+        Debug.Log("state1: " + state1);
+
+        DoUniqueDamage(depth, state1, caster, victim);
 
         // don't deal any damage if entity is invincible
         if (!victimCombat.invincible)
@@ -124,9 +212,9 @@ public class Combat : NetworkBehaviour
             {
                 // subtract defense (but leave at least 1 damage, otherwise
                 // it may be frustrating for weaker players)
-                damageDealt = Mathf.Max(amount - victimCombat.defense, 1);
+                damageDealt = Mathf.Max(actualAmount - victimCombat.defense, 1);
 
-                // critical hit?
+                // critical hit?`
                 if (UnityEngine.Random.value < criticalChance)
                 {
                     damageDealt *= 2;

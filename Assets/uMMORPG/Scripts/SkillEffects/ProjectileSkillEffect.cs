@@ -58,8 +58,9 @@ public class ProjectileSkillEffect : SkillEffect
             {
                 if (target.health.current > 0)
                 {
-                    // find the skill that we casted this effect with
-                    caster.combat.DealDamageAt(target, caster.combat.damage + damage, stunChance, stunTime);
+                    // FIXME: find the skill that we casted this effect with 
+
+                    caster.combat.DealDamageAt(0, 0, caster, target, caster.combat.damage + damage, stunChance, stunTime);
                 }
                 NetworkServer.Destroy(gameObject);
             }
